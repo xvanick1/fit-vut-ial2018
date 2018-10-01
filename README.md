@@ -9,12 +9,12 @@ Pokud existuje více řešení, stačí nalézt pouze jedno. Výsledky prezentov
 
 
 ### SCHEDULED MEETING
-- 1. konzultace - 01.Oct. 13:00 C128
-- 2. konzultace - 08.Oct. 13:00 C127.1
-- 3. konzultace - 15.Oct. 13:00 C127.1
-- 4. konzultace - 22.Oct. 13:00 C127.1
-- 5. konzultace - 29.Oct. 13:00 C127.1
-- 6. konzultace - 05.Nov. 13:00 C127.1
+1. konzultace - 01.Oct. 13:00 C128
+2. konzultace - 08.Oct. 13:00 C127.1
+3. konzultace - 15.Oct. 13:00 C127.1
+4. konzultace - 22.Oct. 13:00 C127.1
+5. konzultace - 29.Oct. 13:00 C127.1
+6. konzultace - 05.Nov. 13:00 C127.1
 
 ### TEAM
 - xadame42
