@@ -79,7 +79,9 @@ void success(Node* node_array, int num_of_nodes, int *min_colored_array,
 
 void backtracking_csp(Node *node_array, NodeStack *stack, int num_of_nodes) {
 
-	int min_chromatic_num = num_of_nodes;
+	/* min_chromatic_num must be bigger by 1 than num_of_nodes, so
+	graphs with property colors == nodes get solution saved to array */
+	int min_chromatic_num = num_of_nodes + 1;
 	int *min_colored_array = calloc(num_of_nodes, sizeof(*min_colored_array));
 
 	/* Pushing first node to stack */
@@ -223,6 +225,7 @@ Node *scan_file(char* filename) {
 int main(int argc, char* argv[]) {
 
 	// TODO: Error handling
+	// TODO: Change format of nodes in file
 
 	if(argc != 2) {
 		fprintf(stderr, "ERROR: Not enough arguments. Run with './main nodes.txt'\n");
