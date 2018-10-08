@@ -9,8 +9,8 @@ Pokud existuje více řešení, stačí nalézt pouze jedno. Výsledky prezentov
 
 
 ### USEFUL
-https://www.fit.vutbr.cz/study/courses/IZU/private/1718izu_2.pdf
-https://www.youtube.com/watch?v=052VkKhIaQ4
+- https://www.fit.vutbr.cz/study/courses/IZU/private/1718izu_2.pdf
+- https://www.youtube.com/watch?v=052VkKhIaQ4
 
 
 ### SCHEDULED MEETING
