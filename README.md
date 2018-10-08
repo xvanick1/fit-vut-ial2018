@@ -8,6 +8,11 @@ Cílem je vytvořit program pro hledání minimálního obarvení neorientovaný
 Pokud existuje více řešení, stačí nalézt pouze jedno. Výsledky prezentovat vhodným způsobem. Součástí projektu bude načítání grafů ze souboru a vhodné testovací grafy. V dokumentaci je potřebné uvést teoretickou složitost úlohy a porovnat ji s experimentálními výsledky.
 
 
+### USEFUL
+https://www.fit.vutbr.cz/study/courses/IZU/private/1718izu_2.pdf
+https://www.youtube.com/watch?v=052VkKhIaQ4
+
+
 ### SCHEDULED MEETING
 1. konzultace - 01.Oct. 13:00 C128
 2. konzultace - 08.Oct. 13:00 C127.1
