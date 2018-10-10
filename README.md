@@ -12,6 +12,7 @@ Pokud existuje více řešení, stačí nalézt pouze jedno. Výsledky prezentov
 - [IZU 2. přednáška](https://www.fit.vutbr.cz/study/courses/IZU/private/1718izu_2.pdf)
 - [Youtube Backtracking](https://www.youtube.com/watch?v=052VkKhIaQ4)
 - [Graph coloring methods](http://homepage.divms.uiowa.edu/~hzhang/c145/notes/chap6.pdf)
+- [ADT Graf](http://javaalgoritmy.wz.cz/graf.htm) 
 
 
 ### SCHEDULED MEETING
