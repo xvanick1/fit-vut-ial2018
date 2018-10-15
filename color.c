@@ -1,11 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <ctype.h>
 
 #include "stack.h" // For Node and NodeStack structs
 
+// TODO: What if nodes are connected to themselves?
+
 /* Processes all neighbors and returns available color */
-int get_color(Node* node, Node *node_array,	int num_of_nodes, 
+int get_color(Node* node, Node *node_array, int num_of_nodes, 
 	int min_chromatic_num) {
 
 	/* For saving colors of neighbors and then finding lowest 
@@ -18,15 +21,16 @@ int get_color(Node* node, Node *node_array,	int num_of_nodes,
 	}
 
 	/* Mark colors of neighbors as unavailable */
-	int num_of_neighbors = node->num_of_neighbors;
-	for(int i = 0; i < num_of_neighbors; i++) {
+	/* Finding neighbors */
+	for(int i = 0; i < num_of_nodes; i++) {
 
-		/* Iterating through all neighbors by index */
-		int neighbor_id = node->neighbors[i];
+		/* Neighbor was found */
+		if(graph_table[node->id][i] == true) {
 
-		/* Set color of neighbor as unavailable, even when 
-		color is 0 (none) */
-		colors[node_array[neighbor_id].color] = false;
+			/* Set color of neighbor as unavailable, even when 
+			color is 0 (none) */
+			colors[node_array[i].color] = false;
+		}
 	}
 
 	/* Choosing the lowest available color */
@@ -145,38 +149,36 @@ void backtracking_csp(Node *node_array, NodeStack *stack, int num_of_nodes) {
 	free(min_colored_array);
 }
 
-void fill_node(FILE* file, Node *node, int num_of_nodes) {
+void fill_node(FILE* file, Node *node, int node_id, 
+	int num_of_nodes) {
 
-	/* Getting node id and initializing it */
-	char b;
-	fscanf(file, " %d:%c", &(node->id), &b);
+	// Getting node id and initializing it 
+	node->id = node_id;
 	node->color = 0;
-	node->num_of_neighbors = 0;
-	node->neighbors = NULL;
 
-	/* Node has no neighbors */
-	if(b == ';') {
-		printf("\n");
-		return;
-	}
-	else {
-		/* Getting node neighbors and their count */
-		int temp_array[num_of_nodes];
-		char c; // For recognizing semicolon as end of line
-		int n = 0; // Number of neighbors
-	    do {
-			fscanf(file, "%d%c", &(temp_array[n]), &c);
-	    	n++;
-	    } while(c != ';');
-	    
-
-	    /* Allocating memory for array of neighbors 
-	    and copying to it from temporary array */
-	    node->num_of_neighbors = n;
-	    node->neighbors = calloc(n, sizeof(*node->neighbors));
-	    for(int j = 0; j < n; j++) {
-	    	node->neighbors[j] = temp_array[j];
-	    }
+	char c;
+	int position = 0;
+	while((c = getc(file)) != EOF) {
+		if(isspace(c)) {
+			if(c == '\n')
+				break;
+			else 
+				continue;
+		}
+		else if(c == '1') {
+			/* Write connection to the table */
+			graph_table[node_id][position] = true;
+			position++;
+			continue;
+		}
+		else if(c == '0') {
+			graph_table[node_id][position] = false;
+			position++;
+			continue;
+		}
+		else {
+			fprintf(stderr, "Wrong file formatting\n");
+		}
 	}
 }
 
@@ -186,9 +188,11 @@ void print_nodes(Node *node_array, int num_of_nodes) {
 	{
 		printf("Node id: %d ", node_array[i].id);
 		printf("(");
-		for (int j = 0; j < node_array[i].num_of_neighbors; j++)
+		for (int j = 0; j < num_of_nodes; j++)
 		{
-			printf(" %d", node_array[i].neighbors[j]);
+			if(graph_table[i][j] == true) {
+				printf(" %d", j);
+			}
 		}
 		printf(" )\n");
 	}
@@ -204,15 +208,23 @@ Node *scan_file(char* filename) {
     }
 
     /* Getting number of nodes */
-    fscanf(file, "count = %d;", &num_of_nodes);
+    char count[100];
+    fgets(count, 100, file); // reads 100 chars or line
+    sscanf(count, "%d\n", &num_of_nodes);
 
     /* Node array where nodes are expected to be organized by id 
     for simple lookup by index of array */
     Node *node_array = calloc(num_of_nodes, sizeof(*node_array));
 
+    /* Empty boolean matrix representing graph */
+    graph_table = calloc(num_of_nodes, sizeof(*graph_table));
+    for (int i = 0; i < num_of_nodes; i++) {
+    	graph_table[i] = calloc(num_of_nodes, sizeof(*graph_table[i]));
+    }
+
     /* Getting nodes from file */
     for(int i = 0; i < num_of_nodes; i++) {
-    	fill_node(file, &node_array[i], num_of_nodes);
+    	fill_node(file, &node_array[i], i, num_of_nodes);
     }
 
     fclose(file); 
@@ -225,7 +237,6 @@ Node *scan_file(char* filename) {
 int main(int argc, char* argv[]) {
 
 	// TODO: Error handling
-	// TODO: Change format of nodes in file
 
 	if(argc != 2) {
 		fprintf(stderr, "ERROR: Not enough arguments. Run with './main nodes.txt'\n");
@@ -244,11 +255,15 @@ int main(int argc, char* argv[]) {
     backtracking_csp(node_array, &stack, num_of_nodes);
 
     /* Freeing memory */
+    // for(int i = 0; i < num_of_nodes; i++) {
+    // 	if(node_array[i].num_of_neighbors > 0) {
+	   //  	free(node_array[i].neighbors);
+    // 	}
+    // }
     for(int i = 0; i < num_of_nodes; i++) {
-    	if(node_array[i].num_of_neighbors > 0) {
-	    	free(node_array[i].neighbors);
-    	}
+    	free(graph_table[i]);
     }
+    free(graph_table);
     free(node_array);
     free(stack.array);
 

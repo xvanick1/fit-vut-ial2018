@@ -1,10 +1,14 @@
+#include <stdbool.h>
+
 int num_of_nodes; // used in stack_full
+
+bool **graph_table;
 
 typedef struct {
 	int id; // id of node equals index in node_array
 	int color;
-	int num_of_neighbors;
-	int* neighbors;
+	// int num_of_neighbors;
+	// int* neighbors;
 } Node;
 
 /* Stack of pointers to nodes, that are actually in node_array */
