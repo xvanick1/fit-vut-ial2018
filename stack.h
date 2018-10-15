@@ -2,14 +2,14 @@
 
 int num_of_nodes; // used in stack_full
 
-bool **graph_table;
-
 typedef struct {
 	int id; // id of node equals index in node_array
 	int color;
-	// int num_of_neighbors;
-	// int* neighbors;
 } Node;
+
+/* Heavily used data types */
+bool **graph_table;
+Node *node_array;
 
 /* Stack of pointers to nodes, that are actually in node_array */
 typedef struct {

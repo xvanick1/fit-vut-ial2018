@@ -3,18 +3,14 @@
 #include <stdbool.h>
 #include <ctype.h>
 
-#include "stack.h" // For Node and NodeStack structs
+#include "stack.h" // For global variables and structures
 
 // TODO: What if nodes are connected to themselves?
 
 /* Processes all neighbors and returns available color */
-int get_color(Node* node, Node *node_array, int num_of_nodes, 
+int get_color(bool* colors, Node* node, int num_of_nodes, 
 	int min_chromatic_num) {
-
-	/* For saving colors of neighbors and then finding lowest 
-	available */ 
-	bool *colors = calloc(num_of_nodes + 1, sizeof(*colors));
-
+	
 	/* Initialize all colors as available */
 	for(int i = 1; i < num_of_nodes + 1; i++) {
 		colors[i] = true;
@@ -45,14 +41,13 @@ int get_color(Node* node, Node *node_array, int num_of_nodes,
 			break;
 		}
 	}
-	free(colors);
 
 	/* available_color == 0 means this node won't get any color */
 	return available_color;
 }
 
 /* Makes sure only minimal solution gets saved to array */
-void success(Node* node_array, int num_of_nodes, int *min_colored_array,
+void success(int num_of_nodes, int *min_colored_array,
 	int *min_chromatic_num) {
 
 	/* Getting max color from node array*/
@@ -81,12 +76,16 @@ void success(Node* node_array, int num_of_nodes, int *min_colored_array,
 	printf("\n");
 }
 
-void backtracking_csp(Node *node_array, NodeStack *stack, int num_of_nodes) {
+void backtracking_csp(NodeStack *stack, int num_of_nodes) {
 
 	/* min_chromatic_num must be bigger by 1 than num_of_nodes, so
 	graphs with property colors == nodes get solution saved to array */
 	int min_chromatic_num = num_of_nodes + 1;
 	int *min_colored_array = calloc(num_of_nodes, sizeof(*min_colored_array));
+
+	/* For saving colors of neighbors and then finding lowest 
+	available */ 
+	bool *colors = calloc(num_of_nodes + 1, sizeof(*colors));
 
 	/* Pushing first node to stack */
 	int id = 0;
@@ -104,7 +103,7 @@ void backtracking_csp(Node *node_array, NodeStack *stack, int num_of_nodes) {
 			/* Choose color for node on top of stack */ 
 			Node *node = stack_top(stack);
 			node->color =
-				get_color(node, node_array, num_of_nodes, min_chromatic_num);
+				get_color(colors, node, num_of_nodes, min_chromatic_num);
 			
 			/* Print depth levels */
 			// for (int i = 0; i < id; ++i) printf("\t");
@@ -116,7 +115,7 @@ void backtracking_csp(Node *node_array, NodeStack *stack, int num_of_nodes) {
 				/* One of goals was reached (last node in array
 				was colored) */
 				if(node->id == num_of_nodes - 1) { 
-					success(node_array, num_of_nodes, min_colored_array, 
+					success(num_of_nodes, min_colored_array, 
 						&min_chromatic_num);
 				}
 				/* Go down the tree */
@@ -147,6 +146,7 @@ void backtracking_csp(Node *node_array, NodeStack *stack, int num_of_nodes) {
 	printf("\n");
 
 	free(min_colored_array);
+	free(colors);
 }
 
 void fill_node(FILE* file, Node *node, int node_id, 
@@ -182,7 +182,7 @@ void fill_node(FILE* file, Node *node, int node_id,
 	}
 }
 
-void print_nodes(Node *node_array, int num_of_nodes) {
+void print_nodes(int num_of_nodes) {
 	printf("Num of nodes: %d\n", num_of_nodes);
 	for (int i = 0; i < num_of_nodes; i++)
 	{
@@ -198,7 +198,7 @@ void print_nodes(Node *node_array, int num_of_nodes) {
 	}
 }
 
-Node *scan_file(char* filename) {
+void scan_file(char* filename) {
 
 	FILE *file;
     file = fopen(filename,"r");
@@ -214,7 +214,7 @@ Node *scan_file(char* filename) {
 
     /* Node array where nodes are expected to be organized by id 
     for simple lookup by index of array */
-    Node *node_array = calloc(num_of_nodes, sizeof(*node_array));
+	node_array = calloc(num_of_nodes, sizeof(*node_array));
 
     /* Empty boolean matrix representing graph */
     graph_table = calloc(num_of_nodes, sizeof(*graph_table));
@@ -229,9 +229,9 @@ Node *scan_file(char* filename) {
 
     fclose(file); 
 
-    print_nodes(node_array, num_of_nodes);
+    print_nodes(num_of_nodes);
 
-    return node_array;
+    return;
 }
 
 int main(int argc, char* argv[]) {
@@ -244,7 +244,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	/* Get graph info from file */
-	Node *node_array = scan_file(argv[1]);
+	scan_file(argv[1]);
 
     /* Seting up node stack */
     NodeStack stack;
@@ -252,14 +252,9 @@ int main(int argc, char* argv[]) {
 	stack.array = calloc(num_of_nodes, sizeof(*stack.array));
 
     /* Do something with nodes */
-    backtracking_csp(node_array, &stack, num_of_nodes);
+    backtracking_csp(&stack, num_of_nodes);
 
     /* Freeing memory */
-    // for(int i = 0; i < num_of_nodes; i++) {
-    // 	if(node_array[i].num_of_neighbors > 0) {
-	   //  	free(node_array[i].neighbors);
-    // 	}
-    // }
     for(int i = 0; i < num_of_nodes; i++) {
     	free(graph_table[i]);
     }
