@@ -1,11 +1,19 @@
+/* 
+NOTES:
+- in this implementation self-loops (node connected to itself) 
+are allowed, but multiple edges between nodes are banished
+
+TODO:
+- headers in each program file
+- error handling
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <ctype.h>
 
 #include "stack.h" // For global variables and structures
-
-// TODO: What if nodes are connected to themselves?
 
 /* Processes all neighbors and returns available color */
 int get_color(bool* colors, Node* node, int num_of_nodes, 
@@ -66,14 +74,14 @@ void success(int num_of_nodes, int *min_colored_array,
 		for(int i = 0; i < num_of_nodes; i++) {
 			min_colored_array[i] = node_array[i].color;
 		}
-		printf("\nSMALLER ");
+		// printf("\nSMALLER ");
 	}
 
-	printf("SOLUTION: ");
-	for (int i = 0; i < num_of_nodes; ++i) {
-		printf(" %d", node_array[i].color);
-	}
-	printf("\n");
+	// printf("SOLUTION: ");
+	// for (int i = 0; i < num_of_nodes; ++i) {
+	// 	printf(" %d", node_array[i].color);
+	// }
+	// printf("\n");
 }
 
 void backtracking_csp(NodeStack *stack, int num_of_nodes) {
@@ -138,12 +146,13 @@ void backtracking_csp(NodeStack *stack, int num_of_nodes) {
 	}
 
 	/* Print minimal solution */
-	printf("\nMinimal chromatic number: %d\n", min_chromatic_num);
-	printf("MINIMAL SOLUTION: ");
-	for(int i = 0; i < num_of_nodes; i++) {
-		printf(" %d", min_colored_array[i]);
-	}
-	printf("\n");
+	printf("%d\n", min_chromatic_num);
+	// printf("\nMinimal chromatic number: %d\n", min_chromatic_num);
+	// printf("MINIMAL SOLUTION: ");
+	// for(int i = 0; i < num_of_nodes; i++) {
+	// 	printf(" %d", min_colored_array[i]);
+	// }
+	// printf("\n");
 
 	free(min_colored_array);
 	free(colors);
@@ -159,7 +168,11 @@ void fill_node(FILE* file, Node *node, int node_id,
 	char c;
 	int position = 0;
 	while((c = getc(file)) != EOF) {
-		if(isspace(c)) {
+		if(position > num_of_nodes) {
+			fprintf(stderr, "Wrong file formatting\n");
+			exit(1);
+		}
+		else if(isspace(c)) {
 			if(c == '\n')
 				break;
 			else 
@@ -178,7 +191,13 @@ void fill_node(FILE* file, Node *node, int node_id,
 		}
 		else {
 			fprintf(stderr, "Wrong file formatting\n");
+			exit(1);
 		}
+	}
+
+	if(position < num_of_nodes) {
+		fprintf(stderr, "Wrong file formatting\n");
+		exit(1);
 	}
 }
 
@@ -229,14 +248,12 @@ void scan_file(char* filename) {
 
     fclose(file); 
 
-    print_nodes(num_of_nodes);
+    // print_nodes(num_of_nodes);
 
     return;
 }
 
 int main(int argc, char* argv[]) {
-
-	// TODO: Error handling
 
 	if(argc != 2) {
 		fprintf(stderr, "ERROR: Not enough arguments. Run with './main nodes.txt'\n");
