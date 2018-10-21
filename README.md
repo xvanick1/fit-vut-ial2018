@@ -14,6 +14,7 @@ Pokud existuje více řešení, stačí nalézt pouze jedno. Výsledky prezentov
 - [Graph coloring methods](http://homepage.divms.uiowa.edu/~hzhang/c145/notes/chap6.pdf)
 - [ADT Graf](http://javaalgoritmy.wz.cz/graf.htm) 
 - [How to find time complexity of an algorithm](https://stackoverflow.com/questions/11032015/how-to-find-time-complexity-of-an-algorithm)
+- [Minimal complexity for graph coloring](https://cstheory.stackexchange.com/questions/33998/what-is-the-complexity-of-the-fastest-method-of-k-coloring-any-graph)
 
 
 ### SCHEDULED MEETING
