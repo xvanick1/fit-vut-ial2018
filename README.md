@@ -13,6 +13,7 @@ Pokud existuje více řešení, stačí nalézt pouze jedno. Výsledky prezentov
 - [Youtube Backtracking](https://www.youtube.com/watch?v=052VkKhIaQ4)
 - [Graph coloring methods](http://homepage.divms.uiowa.edu/~hzhang/c145/notes/chap6.pdf)
 - [ADT Graf](http://javaalgoritmy.wz.cz/graf.htm) 
+- [How to find time complexity of an algorithm](https://stackoverflow.com/questions/11032015/how-to-find-time-complexity-of-an-algorithm)
 
 
 ### SCHEDULED MEETING
