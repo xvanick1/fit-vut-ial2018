@@ -30,3 +30,6 @@ Pokud existuje více řešení, stačí nalézt pouze jedno. Výsledky prezentov
 - xbarno00
 - xvanic09
 - xweige01
+
+### PREPARATION FOR FINAL UPLOAD
+- remove .DS_Store(hidden macOS based) file from every directory
