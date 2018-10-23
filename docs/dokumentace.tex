@@ -1,0 +1,120 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[czech]{babel}
+\usepackage[left= 1.5cm,text={18cm, 25cm},top=2.5cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{times}
+\usepackage{paralist}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{enumitem}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage[ddmmyyyy]{datetime}
+\usepackage{array}
+\pagestyle{plain}
+\pagenumbering{arabic}
+
+\renewcommand*\contentsname{Obsah}
+
+\newdateformat{mydate}{\twodigit{\THEDAY}.{ }\shortmonthname[\THEMONTH] \THEYEAR}
+
+\pagenumbering{arabic}
+
+\usepackage{url}
+\DeclareUrlCommand\url{\def\UrlLeft{<}\def\UrlRight{>} \urlstyle{tt}}
+
+% \usepackage{indentfirst}
+
+\begin{document}
+\selectlanguage{czech}
+
+\begin{titlepage}
+\begin{center}
+    {\Huge \textsc{Vysoké učení technické v Brně}}
+\vspace{\stretch{0.01}}
+    
+    {\LARGE \uppercase{FAKULTA INFORMAČNÍCH TECHNOLOGIÍ}}
+    
+\begin{figure}[h]
+\vspace{5.0cm}
+\centering
+\includegraphics[scale=0.15]{logo.png}
+\vspace{-10.0cm}
+\end{figure}
+    
+\vspace{\stretch{0.382}}
+	{\LARGE Projekt IAL, 2018Z}
+\vspace{\stretch{0.02}}
+
+	{\Huge \textbf{Názov projektu}}
+\vspace{\stretch{0.02}}\\
+
+{\LARGE {Projekt č. XXX}}\\
+{\LARGE {Tým xxx, Tým xblabla00}}
+
+\begin{figure}[h]
+\centering
+{\Large {\mydate\today}}
+\vspace{6cm}
+\end{figure}
+
+\end{center}
+\begin{compactitem}
+\item[] Tým:
+\item[] Adámek Josef, xadame42
+\item[] Barnová Diana, xbarno00
+\item[] Vanický Jozef, xvanic09
+\item[] Weigel Filip, xweige01
+\end{compactitem}
+
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{Abstrakt}
+TBD
+
+\section{Průzkum kontextu použití}
+\subsection{Cílová skupina}
+TBD
+
+\subsection {Typické případy použití}
+
+
+\subsection{Prostředí použití}
+TBD
+
+\subsection{Požadavky na produkt}
+TBD
+\section{Návrh klíčových prvků UI}
+TBD
+
+\subsection{Seznam projektů}
+TBD
+
+\subsection{ Popis projektu}
+TBD
+
+\section{Návrh GUI a Prototyp}
+TBD
+
+\section{Testování prototypu GUI}
+TBD
+
+\section{Studijní zdroje}
+TBD
+
+\section{Implementace}
+TBD
+
+\section{Týmová spolupráce}
+TBD
+
+\section{Závěr}
+TBD
+
+
+\end{document}
