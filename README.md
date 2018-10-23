@@ -31,5 +31,8 @@ Pokud existuje více řešení, stačí nalézt pouze jedno. Výsledky prezentov
 - xvanic09
 - xweige01
 
+### NOTES
+- Docs'll be made in .tex (Yeah I know ... but Bohuš likes it)
+
 ### PREPARATION FOR FINAL UPLOAD
 - remove .DS_Store(hidden macOS based) file from every directory
