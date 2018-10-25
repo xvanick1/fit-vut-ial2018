@@ -1,3 +1,8 @@
+/*
+Stack construct in this file was strongly inspired 
+by 3rd IAL presentation
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -57,7 +62,7 @@ int stack_full(const NodeStack *stack) {
 	return stack->top == num_of_nodes - 1;
 }
 
-/* Returns id of node from top of the stack */
+/* Returns pointer to node from top of the stack */
 Node* stack_top(const NodeStack *stack) {
 
 	if (stack_empty(stack))

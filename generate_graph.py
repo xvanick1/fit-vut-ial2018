@@ -5,7 +5,7 @@ Script to generate undirectional graph formated as
 matrix of connections. 
 Created graph can be:
 1. Randomly connected
-2. Fully connected 
+2. Fully connected (without self-loops)
 3. Empty of connections
 
 Use:
@@ -47,7 +47,7 @@ def create_matrix(args, n):
 		matrix = np.full((n, n), 0)
 
 		# Randomize connections only at and above main diagonal of matrix
-		m = 0
+		m = 1
 		for i in range(0, n):
 			for j in range(m, n):
 				matrix[i][j] = random.randint(0, 1)
@@ -55,13 +55,14 @@ def create_matrix(args, n):
 
 		'''
 		Make matrix symmetrical by main diagonal by 
-		transposing it and making logical OR operation on it
+		transposing it and adding it to that
 		'''
-		matrix = np.logical_or(matrix, matrix.T).astype(int)
+		matrix = matrix + matrix.T
 
-	# Fully connected graph
+	# Fully connected graph (without self-loops)
 	elif args.f is True:
-		matrix = np.full((n, n), 0)
+		matrix = np.full((n, n), 1)
+		np.fill_diagonal(matrix, 0)
 
 	# Empty of connections
 	elif args.e is True:
