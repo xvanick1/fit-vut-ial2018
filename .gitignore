@@ -1,2 +1,4 @@
 main
 *.o
+*.txt
+.DS_Store
