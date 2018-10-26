@@ -1,39 +1,49 @@
 /* 
+
+Main part of coloring program
+
+USE:
+$ ./main nodes.txt [-p]
+- "-p" flag turns on printing of info while program is running
+
 NOTES:
 - in this implementation self-loops (node connected to itself) 
-are allowed, but multiple edges between nodes are banished
+and multiple edges between nodes are NOT allowed
 
 TODO:
 - headers in each program file
 - error handling
 - in case of error, free all allocated memory
-- find faster algorithm than backtracking, that finds 
-optimal solution and can realistically 
-work with graphs with 100 nodes
+- maybe try forward-checking
+- program needs to return solution, not just min. chrom. number
+
 */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <ctype.h>
+#include <string.h>
 
 #include "stack.h" // For global variables and structures
 
 /* For printing solution */
 typedef enum {
-	SAME,
+	NORMAL,
 	SMALLER,
 	MINIMAL
 } MODE;
 
 /* Prints coloring of nodes */
-void print_solution(int *min_colored_array, int min_chromatic_num, 
+void print_coloring(int *min_colored_array, int min_chromatic_num, 
 	int mode) {
 
-	if(mode == SAME || mode == SMALLER) {
+	if(!print_flag) return;
 
-		if(mode == SAME) 
-			printf("SAME CHROM. NUMBER {%d}: ", min_chromatic_num);
+	if(mode == NORMAL || mode == SMALLER) {
+
+		if(mode == NORMAL) 
+			printf("CHROM. NUMBER {%d}: ", min_chromatic_num);
 		else 
 			printf("SMALLER CHROM. NUMBER {%d}: ", min_chromatic_num);
 
@@ -56,15 +66,11 @@ void print_solution(int *min_colored_array, int min_chromatic_num,
 	}
 }
 
-/* Print depth levels (only for small graphs) */
-void print_levels(Node* node, int id) {
-	for (int i = 0; i < id; i++) 
-		printf("\t");
-	printf("Node %d - [%d]\n", node->id, node->color);
-}
-
 /* Prints nodes info */
 void print_nodes(int num_of_nodes) {
+
+	if(!print_flag) return;
+
 	printf("Num of nodes: %d\n", num_of_nodes);
 	for (int i = 0; i < num_of_nodes; i++)
 	{
@@ -78,27 +84,35 @@ void print_nodes(int num_of_nodes) {
 		}
 		printf(" )\n");
 	}
+	printf("\n");
 }
 
-/* Checks if matrix representing graph is symmetrical by diagonal,
-and if not, ends program */
-void is_matrix_symmetrical() {
+/* Checks if matrix representing graph is symmetrical by diagonal
+and that it doesn't contain self-loops. Otherwise it ends program */
+void check_matrix() {
 	int diagonal = 0;
 	for (int i = 0; i < num_of_nodes; i++)
+	{
+		if(graph_table[i][diagonal] == 1) {
+			fprintf(stderr, "Self-loops are not allowed!\n");
+			exit(1);
+		}
 		for (int j = diagonal; j < num_of_nodes; j++)
 			if(graph_table[i][j] != graph_table[j][i]) 
 			{
 				fprintf(stderr, "Input graph is not undirected!\n");
 				exit(1);
 			}
+		diagonal++;
+	}
 }
 
 /* Makes sure only minimal solution gets saved to array */
-void success(int num_of_nodes, int *min_colored_array,
+void success(NodeStack *stack, int *min_colored_array, int num_of_nodes, 
 	int *min_chromatic_num) {
 
-	/* Getting max color from node array*/
-	int max_color = 0;
+	/* Getting max color from node array */
+	int max_color = 0; 
 	for (int i = 0; i < num_of_nodes; i++) {
 		if(node_array[i].color > max_color) {
 			max_color = node_array[i].color;
@@ -115,12 +129,35 @@ void success(int num_of_nodes, int *min_colored_array,
 		}
 
 		/* Print better solution */
-		// print_solution(min_colored_array, *min_chromatic_num, SMALLER);
-		// return;
-	}
+		print_coloring(min_colored_array, *min_chromatic_num, SMALLER);
 
-	/* Print solution with same chrom. number */
-	// print_solution(min_colored_array, *min_chromatic_num, SAME);
+		/* OPTIMIZATION #2
+		Find the first node from left in min_colored_array, that has color
+		same as min_chromatic_num and pop it and all neighbors next to its
+		right, because this part of tree is useless */
+		int useless = -1;
+		for (int i = 0; i < num_of_nodes; i++)
+			if(min_colored_array[i] == *min_chromatic_num) {
+				useless = i;
+				break;
+			}
+
+		if(useless != -1)
+			while(1) {
+				int top_id = stack_top(stack)->id;
+				if(top_id != useless) {
+					node_array[top_id].color = 0;
+					stack_pop(stack);
+				}
+				else {
+					/* If I'm not zeroing color here,
+					solution is different */
+					node_array[top_id].color = 0;
+					stack_pop(stack);
+					break;
+				}
+			}
+	}
 }
 
 /* Processes all neighbors and returns available color */
@@ -148,10 +185,11 @@ int get_color(bool* colors, Node* node, int num_of_nodes,
 	/* Choosing the lowest available color */
 	int available_color = 0;
 	/* Minimal color must be node's last color + 1, so that the node
-	iterate through all its possible colors.
-	Also it shouldn't get color bigger than saved minimal chromatic
-	number, so it doesn't unnecessarily iterate through higher colors */
-	for(int i = node->color + 1; i <= min_chromatic_num; i++) {
+	iterates through all its possible colors */
+	/* OPTIMIZATION #1
+	Also it shouldn't get color >= than saved minimal chromatic
+	number, since I need only smaller solutions */
+	for(int i = node->color + 1; i < min_chromatic_num; i++) {
 		if(colors[i] == true) {
 			available_color = i;
 			break;
@@ -174,8 +212,7 @@ void backtracking_csp(NodeStack *stack, int num_of_nodes) {
 	bool *colors = calloc(num_of_nodes + 1, sizeof(*colors));
 
 	/* Pushing first node to stack */
-	int id = 0;
-	stack_push(stack, &(node_array[id]));
+	stack_push(stack, &(node_array[0]));
 
 	while(42) {
 
@@ -190,9 +227,9 @@ void backtracking_csp(NodeStack *stack, int num_of_nodes) {
 			Node *node = stack_top(stack);
 			node->color =
 				get_color(colors, node, num_of_nodes, min_chromatic_num);
-			
-			/* Print depth levels */
-			// print_levels(node, id);
+
+			/* Print current state of color array */
+			print_coloring(min_colored_array, min_chromatic_num, NORMAL);	
 
 			/* Node can be colored (rule can be applied) */
 			if(node->color != 0) {
@@ -200,22 +237,22 @@ void backtracking_csp(NodeStack *stack, int num_of_nodes) {
 				/* One of goals was reached (last node in array
 				was colored) */
 				if(node->id == num_of_nodes - 1) { 
-					success(num_of_nodes, min_colored_array, 
+
+					success(stack, min_colored_array, num_of_nodes, 
 						&min_chromatic_num);
+
 				}
 				/* Go down the tree */
 				else {
-					id++;
+
+					/* Take next node in node array */
+					int id = (stack->top) + 1;
 					stack_push(stack, &(node_array[id]));
 					continue;
 				}
 			}
 			/* Go up the tree */
 			else {
-				/* Making sure color of node will be 0 for next encounters */
-				node->color = 0; // not sure if needed
-
-				id--;
 				stack_pop(stack);
 				continue;
 			}
@@ -223,8 +260,10 @@ void backtracking_csp(NodeStack *stack, int num_of_nodes) {
 	}
 
 	/* Print minimal solution */
-	printf("%d\n", min_chromatic_num);
-	// print_solution(min_colored_array, min_chromatic_num, MINIMAL);
+	if(print_flag)
+		print_coloring(min_colored_array, min_chromatic_num, MINIMAL);
+	else
+		printf("%d\n", min_chromatic_num);
 
 	free(min_colored_array);
 	free(colors);
@@ -306,21 +345,27 @@ void create_graph(char* filename) {
 
     fclose(file); 
 
-    /* If matrix isn't symmetrical by diagonal, exit */
-    is_matrix_symmetrical();
+    /* If graph matrix isn't symmetrical by diagonal or it contains
+    self-loops, exit */
+    check_matrix();
 
     /* Print node info */
-    // print_nodes(num_of_nodes);
+    print_nodes(num_of_nodes);
 
     return;
 }
 
 int main(int argc, char* argv[]) {
 
-	if(argc != 2) {
-		fprintf(stderr, "ERROR: Not enough arguments. Run with './main nodes.txt'\n");
+	if(argc < 2 || argc > 3) {
+		fprintf(stderr, "ERROR: Wrong arguments. Run with './main nodes.txt [-p]'\n");
 		exit(-1);
 	}
+	if(argc == 3 && strcmp("-p", argv[2]) == 0)
+		print_flag = true;
+	else
+		print_flag = false;
+
 
 	/* Get graph info from file and create structures representing 
 	this graph */
