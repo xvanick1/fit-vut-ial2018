@@ -95,4 +95,5 @@ void stack_push(NodeStack *stack, Node *node) {
 	if there is one */
 	stack->top++;
 	stack->array[stack->top] = node;
+    
 }
