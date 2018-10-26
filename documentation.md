@@ -10,7 +10,9 @@ Pokud existuje více řešení, stačí nalézt pouze jedno. Výsledky prezentuj
 
 ## Struktury
 
-V našem řešení jsme 
+V našem řešení jsme použili dynamicky alokované pole pro uzly, 2D dynamicky alokované pole pro reprezentaci spojení mezi uzly, strukturu pro uzly, zásobník pro ukazatele na uzly
+
+[ZDE SCHÉMA STRUKTUR]
 
 ## Algoritmus
 
@@ -21,3 +23,8 @@ Pro hledání řešení obarvení neorientovaného grafu s nejmenším chromatic
 Tato metoda funguje tak, že se vytváří strom, přičemž každý level představuje pořadí uzlu v poli uzlů a každá větev vycházející dolů z uzlu představuje výběr barvy pro spodní uzel.
 
 [ZDE SUPERDUPER OBRÁZEK STROMU]
+
+
+
+
+

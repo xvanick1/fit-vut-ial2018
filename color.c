@@ -1,8 +1,10 @@
 /* 
 
-FILE NAME: color.c
+FILE NAME: 
+color.c
 
-PROJECT IDENTIFICATION: IAL, "6. Obarvení grafu"
+PROJECT IDENTIFICATION: 
+"6. Obarvení grafu" - substitute project from IAL course
 
 AUTHORS:
 - Josef Adamek (xadame42)
@@ -11,31 +13,38 @@ AUTHORS:
 - Filip Weigel (xweige01)
 
 BRIEF DESCRIPTION:
-Main part of coloring program
+Main part of coloring program, that loads graph from file, applies 
+backtracking method with some specific changes on that graph, finds
+coloring of graph with minimal chromatic number and prints solution
 
-DATE OF CREATION:
+CREATED:
 27.9.2018
 
-DATE OF LAST CHANGE:
----
+LAST CHANGE:
+27.10.2018
 
-_________________________________________________
-
-USE:
-$ ./main nodes.txt [-p]
-- "-p" flag turns on printing of info while program is running
+______________________________________________________________
 
 NOTES:
 - in this implementation self-loops (node connected to itself) 
 and multiple edges between nodes are NOT allowed
 
 TODO:
-- print MANUAL when ran with wrong arguments
+- index colors from 0 not 1
+- fix solution print
+- clean code for arguments
+- create README
+  - use make
+  - program is started by ./main
+  - file with graph must be in format count, matrix of connections
+
 - headers in each program file
+- create 5-10 good test graphs
+- finish documentation
 - error handling
 - in case of error, free all allocated memory
+
 - maybe try forward-checking
-- program needs to return solution, not just min. chrom. number
 
 */
 
@@ -59,7 +68,7 @@ typedef enum {
 void print_coloring(int *min_colored_array, int min_chromatic_num, 
 	int mode) {
 
-	if(test_flag) return;
+	if(brief_flag) return;
 
 	if(mode == NORMAL || mode == SMALLER) {
 
@@ -278,7 +287,7 @@ void backtracking_csp(NodeStack *stack, int num_of_nodes) {
 	}
 
 	/* Print minimal solution */
-	if(!test_flag)
+	if(!brief_flag)
 		print_coloring(min_colored_array, min_chromatic_num, MINIMAL);
 	else
 		printf("%d\n", min_chromatic_num);
@@ -375,18 +384,33 @@ int main(int argc, char* argv[]) {
 	/* Start measuring time */
 	clock_t begin = clock();
 
-	if((argc < 2 || argc > 3) || (strcmp("-h", argv[1]) == 0 || strcmp("--help", argv[1]) == 0)) {
-		fprintf(stderr, "HELP: Run with './main nodes.txt [-p]',\
-			\nwhere \"nodes.txt\" is file with undirected graph\
-			\nrepresented by matrix and flag \"-t\" will turn on test mode\
-			\n");
+	char* help = "\nDESCRIPTION:\
+			\n\tProgram for finding minimal chromatic number for undirected\
+			\n\tgraph. In default mode prints info about graph and its\
+			\n\tsolution.\
+			\n\nSYNOPSIS:\
+			\n\t./main FILENAME [-h] [-b]\
+			\n\nARGUMENTS:\
+			\n\n\tFILENAME\
+			\n\t\tname of file with graph\
+			\n\n\t-b, --brief\
+			\n\t\toptional flag that turns on brief node,\
+			\n\t\tso program prints only minimal chromatic\
+			\n\t\tvalue of graph (used for testing)\
+			\n\n\t-h, --help\
+			\n\t\tprints this message\
+			\n\n";
+
+	if((argc < 2 || argc > 3) || strcmp("-h", argv[1]) == 0 
+		|| strcmp("--help", argv[1]) == 0) {
+		printf("%s", help);
 		exit(-1);
 	}
-	if(argc == 3 && strcmp("-t", argv[2]) == 0)
-		test_flag = true;
+	if(argc == 3 && (strcmp("-b", argv[2]) == 0
+		|| strcmp("--brief", argv[2]) == 0))
+		brief_flag = true;
 	else
-		test_flag = false;
-
+		brief_flag = false;
 
 	/* Get graph info from file and create structures representing 
 	this graph */
