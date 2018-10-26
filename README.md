@@ -1,7 +1,6 @@
 ## VUT-FIT IAL Projekt vol.2: Zadání č.6 Obarvení grafu
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/8cf1b376bc184779b0885e86d2724dfe)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Keei-SK/ial-vol2&amp;utm_campaign=Badge_Grade)
-
 ### DESCRIPTION
 Obarvením grafu rozumíme přiřazení barev uzlům grafu, přičemž žádné dva sousední uzly nesmí být obarveny stejně. Minimální počet použitých barev se nazývá chromatické číslo. 
 
