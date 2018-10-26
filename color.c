@@ -44,6 +44,7 @@ TODO:
 #include <stdbool.h>
 #include <ctype.h>
 #include <string.h>
+#include <time.h>
 
 #include "stack.h" // For global variables and structures
 
@@ -58,7 +59,7 @@ typedef enum {
 void print_coloring(int *min_colored_array, int min_chromatic_num, 
 	int mode) {
 
-	if(!print_flag) return;
+	if(test_flag) return;
 
 	if(mode == NORMAL || mode == SMALLER) {
 
@@ -74,37 +75,34 @@ void print_coloring(int *min_colored_array, int min_chromatic_num,
 	}
 
 	else if(mode == MINIMAL) {
-		printf("\nMINIMAL CHROM. NUMBER {%d}: ", min_chromatic_num);
+
+		printf("NUMBER OF NODES: %d\n\n", num_of_nodes);
+
+		printf("NODE ID\t|\tCOLOR\t|\tNEIGHBORS\t\t|\n");
+		printf("########|###############|###############################|\n");
 		for(int i = 0; i < num_of_nodes; i++) {
-			printf(" %d", min_colored_array[i]);
+			printf("%d\t|\t%d\t|\t", i, min_colored_array[i]);
+			int neighbors = 0;
+			for (int j = 0; j < num_of_nodes; j++)
+			{
+				if(graph_table[i][j] == true) {
+					if(neighbors != 0 && neighbors%10 == 0) {
+						printf("\t|");
+						printf("\n\t|\t\t|\t");
+					}
+					neighbors++;
+					printf("%d ", j);
+				}
+			}
+			printf("\n########|###############|###############################|\n");
 		}
-		printf("\n");
+
+		printf("\nMINIMAL CHROMATIC NUMBER: %d\n", min_chromatic_num);
 	}
 
 	else {
 		fprintf(stderr, "ERROR!\n");
 	}
-}
-
-/* Prints nodes info */
-void print_nodes(int num_of_nodes) {
-
-	if(!print_flag) return;
-
-	printf("Num of nodes: %d\n", num_of_nodes);
-	for (int i = 0; i < num_of_nodes; i++)
-	{
-		printf("Node id: %d ", node_array[i].id);
-		printf("(");
-		for (int j = 0; j < num_of_nodes; j++)
-		{
-			if(graph_table[i][j] == true) {
-				printf(" %d", j);
-			}
-		}
-		printf(" )\n");
-	}
-	printf("\n");
 }
 
 /* Checks if matrix representing graph is symmetrical by diagonal
@@ -149,7 +147,7 @@ void success(NodeStack *stack, int *min_colored_array, int num_of_nodes,
 		}
 
 		/* Print better solution */
-		print_coloring(min_colored_array, *min_chromatic_num, SMALLER);
+		// print_coloring(min_colored_array, *min_chromatic_num, SMALLER);
 
 		/* OPTIMIZATION #2
 		Find the first node from left in min_colored_array, that has color
@@ -249,7 +247,7 @@ void backtracking_csp(NodeStack *stack, int num_of_nodes) {
 				get_color(colors, node, num_of_nodes, min_chromatic_num);
 
 			/* Print current state of color array */
-			print_coloring(min_colored_array, min_chromatic_num, NORMAL);	
+			// print_coloring(min_colored_array, min_chromatic_num, NORMAL);	
 
 			/* Node can be colored (rule can be applied) */
 			if(node->color != 0) {
@@ -280,7 +278,7 @@ void backtracking_csp(NodeStack *stack, int num_of_nodes) {
 	}
 
 	/* Print minimal solution */
-	if(print_flag)
+	if(!test_flag)
 		print_coloring(min_colored_array, min_chromatic_num, MINIMAL);
 	else
 		printf("%d\n", min_chromatic_num);
@@ -369,25 +367,25 @@ void create_graph(char* filename) {
     self-loops, exit */
     check_matrix();
 
-    /* Print node info */
-    print_nodes(num_of_nodes);
-
     return;
 }
 
 int main(int argc, char* argv[]) {
 
+	/* Start measuring time */
+	clock_t begin = clock();
+
 	if((argc < 2 || argc > 3) || (strcmp("-h", argv[1]) == 0 || strcmp("--help", argv[1]) == 0)) {
 		fprintf(stderr, "HELP: Run with './main nodes.txt [-p]',\
 			\nwhere \"nodes.txt\" is file with undirected graph\
-			\nrepresented by matrix and flag \"-p\" will turn on printing\
-			\nof additional info about solving graph.\n");
+			\nrepresented by matrix and flag \"-t\" will turn on test mode\
+			\n");
 		exit(-1);
 	}
-	if(argc == 3 && strcmp("-p", argv[2]) == 0)
-		print_flag = true;
+	if(argc == 3 && strcmp("-t", argv[2]) == 0)
+		test_flag = true;
 	else
-		print_flag = false;
+		test_flag = false;
 
 
 	/* Get graph info from file and create structures representing 
@@ -409,6 +407,11 @@ int main(int argc, char* argv[]) {
     free(graph_table);
     free(node_array);
     free(stack.array);
+
+    /* Stop measuring time and print it */
+    clock_t end = clock();
+	double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+	printf("MEASURED TIME: %0.3fs\n", time_spent);
 
 	return 0;
 }

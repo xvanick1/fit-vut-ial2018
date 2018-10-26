@@ -48,7 +48,7 @@ def execute_tests(a, b):
 		test_out = "tests/test{}.out".format(x)
 
 		''' Feed C program with test graph and get its output ''' 
-		out = subprocess.Popen(["./main", test_in], 
+		out = subprocess.Popen(["./main", test_in, "-t"], 
 			stdout=subprocess.PIPE).stdout.readline()
 		out = int(out)
 

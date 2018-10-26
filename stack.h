@@ -1,6 +1,6 @@
 #include <stdbool.h>
 
-bool print_flag;
+bool test_flag;
 
 int num_of_nodes; // used in stack_full
 
