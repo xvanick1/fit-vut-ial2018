@@ -1,6 +1,25 @@
 /* 
 
+FILE NAME: color.c
+
+PROJECT IDENTIFICATION: IAL, "6. Obarvení grafu"
+
+AUTHORS:
+- Josef Adamek (xadame42)
+- Diana Barnova (xbarno00)
+- Jozef Vanicky (xvanic09)
+- Filip Weigel (xweige01)
+
+BRIEF DESCRIPTION:
 Main part of coloring program
+
+DATE OF CREATION:
+27.9.2018
+
+DATE OF LAST CHANGE:
+---
+
+_________________________________________________
 
 USE:
 $ ./main nodes.txt [-p]
@@ -11,6 +30,7 @@ NOTES:
 and multiple edges between nodes are NOT allowed
 
 TODO:
+- print MANUAL when ran with wrong arguments
 - headers in each program file
 - error handling
 - in case of error, free all allocated memory
@@ -357,8 +377,11 @@ void create_graph(char* filename) {
 
 int main(int argc, char* argv[]) {
 
-	if(argc < 2 || argc > 3) {
-		fprintf(stderr, "ERROR: Wrong arguments. Run with './main nodes.txt [-p]'\n");
+	if((argc < 2 || argc > 3) || (strcmp("-h", argv[1]) == 0 || strcmp("--help", argv[1]) == 0)) {
+		fprintf(stderr, "HELP: Run with './main nodes.txt [-p]',\
+			\nwhere \"nodes.txt\" is file with undirected graph\
+			\nrepresented by matrix and flag \"-p\" will turn on printing\
+			\nof additional info about solving graph.\n");
 		exit(-1);
 	}
 	if(argc == 3 && strcmp("-p", argv[2]) == 0)
