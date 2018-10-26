@@ -1,0 +1,15 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci:python
+    steps:
+      - checkout
+      - run:
+          name:Compile
+          command: make
+      - run:
+          name: Tests
+          command: python3 testing.py
+
+
