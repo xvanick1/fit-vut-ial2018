@@ -91,7 +91,7 @@ void print_coloring(int *min_colored_array, int min_chromatic_num,
 		printf("NODE ID\t|\tCOLOR\t|\tNEIGHBORS\t\t|\n");
 		printf("########|###############|###############################|\n");
 		for(int i = 0; i < num_of_nodes; i++) {
-			printf("%d\t|\t%d\t|\t", i, min_colored_array[i]);
+			printf("%d\t|\t%d\t|\t", i, min_colored_array[i]-1);
 			int neighbors = 0;
 			for (int j = 0; j < num_of_nodes; j++)
 			{
