@@ -12,7 +12,7 @@ AUTHORS:
 - Jozef Vanicky (xvanic09)
 - Filip Weigel (xweige01)
 
-BRIEF DESCRIPTION:
+BRIEF FILE DESCRIPTION:
 Main part of coloring program, that loads graph from file, applies 
 backtracking method with some specific changes on that graph, finds
 coloring of graph with minimal chromatic number and prints solution
@@ -54,6 +54,7 @@ TODO:
 #include <ctype.h>
 #include <string.h>
 #include <time.h>
+#include <unistd.h> // For parsing arguments
 
 #include "stack.h" // For global variables and structures
 
@@ -370,13 +371,75 @@ void create_graph(char* filename) {
     	fill_node(file, &node_array[i], i, num_of_nodes);
     }
 
-    fclose(file); 
-
     /* If graph matrix isn't symmetrical by diagonal or it contains
     self-loops, exit */
     check_matrix();
+    
+    fclose(file); 
 
     return;
+}
+
+char* parse_arguments(int argc, char** argv) {
+
+	char* help = 
+			"\nDESCRIPTION:\n"
+			"\tProgram for finding minimal chromatic number for undirected\n"
+			"\tgraph. In default mode prints info about graph and its\n"
+			"\tsolution.\n"
+			"\nSYNOPSIS:\n"
+			"\t./main FILENAME [-h] [-b]\n"
+			"\nARGUMENTS:\n"
+			"\tFILENAME\n"
+			"\t\tname of file with graph\n"
+			"\n\t-b\n"
+			"\t\toptional flag that turns on brief node,\n"
+			"\t\tso program prints only minimal chromatic\n"
+			"\t\tvalue of graph (used for testing)\n"
+			"\n\t-h\n"
+			"\t\tprint this message and exit\n"
+			"\n";
+
+	brief_flag = false;
+	char *filename = NULL;
+
+	int opt;
+	while((opt = getopt(argc, argv, "bh")) != -1) {
+		switch (opt) {
+	        case 'b': 
+	        	brief_flag = true; 
+	        	break;
+	        case 'h': 
+	        	printf("%s", help);
+		        exit(EXIT_FAILURE);
+	        	break;
+	        default:
+	            printf("%s", help);
+	            exit(EXIT_FAILURE);
+        }
+	}
+
+	/* Only 1 non-option argument is allowed for filename. Function
+	getopt() will put all non-option arguments to end of argv array
+	and variable optind is index of first non-option argument */
+	for (int i = optind; i < argc; i++) {
+		if(i == optind)
+			filename = argv[i];
+		else {
+			fprintf(stderr, "ERROR: Only 1 non-option argument is allowed\n");
+			printf("%s", help);
+	        exit(EXIT_FAILURE);
+		}
+	}
+
+	/* Filename argument is mandatory */
+	if(filename == NULL) {
+		fprintf(stderr, "ERROR: Filename argument is mandatory\n");
+		printf("%s", help);
+        exit(EXIT_FAILURE);
+    }
+
+	return filename;
 }
 
 int main(int argc, char* argv[]) {
@@ -384,39 +447,12 @@ int main(int argc, char* argv[]) {
 	/* Start measuring time */
 	clock_t begin = clock();
 
-	char* help = "\nDESCRIPTION:\
-			\n\tProgram for finding minimal chromatic number for undirected\
-			\n\tgraph. In default mode prints info about graph and its\
-			\n\tsolution.\
-			\n\nSYNOPSIS:\
-			\n\t./main FILENAME [-h] [-b]\
-			\n\nARGUMENTS:\
-			\n\n\tFILENAME\
-			\n\t\tname of file with graph\
-			\n\n\t-b, --brief\
-			\n\t\toptional flag that turns on brief node,\
-			\n\t\tso program prints only minimal chromatic\
-			\n\t\tvalue of graph (used for testing)\
-			\n\n\t-h, --help\
-			\n\t\tprints this message\
-			\n\n";
-
-	if((argc < 2 || argc > 3) || strcmp("-h", argv[1]) == 0 
-		|| strcmp("--help", argv[1]) == 0) {
-		printf("%s", help);
-		exit(-1);
-	}
-	if(argc == 3 && (strcmp("-b", argv[2]) == 0
-		|| strcmp("--brief", argv[2]) == 0))
-		brief_flag = true;
-	else
-		brief_flag = false;
-
 	/* Get graph info from file and create structures representing 
 	this graph */
-	create_graph(argv[1]);
+	char* filename = parse_arguments(argc, argv);
+	create_graph(filename);
 
-    /* Seting up node stack */
+    /* Set up node stack for node pointers */
     NodeStack stack;
 	stack_init(&stack);
 	stack.array = calloc(num_of_nodes, sizeof(*stack.array));
@@ -435,7 +471,8 @@ int main(int argc, char* argv[]) {
     /* Stop measuring time and print it */
     clock_t end = clock();
 	double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-	printf("MEASURED TIME: %0.3fs\n", time_spent);
+	if(!brief_flag)
+		printf("MEASURED TIME: %fs\n\n", time_spent);
 
 	return 0;
 }

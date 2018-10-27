@@ -9,7 +9,7 @@ typedef struct {
 	int color;
 } Node;
 
-/* Heavily used data types */
+/* Heavily used data types, */
 bool **graph_table;
 Node *node_array;
 

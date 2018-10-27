@@ -20,8 +20,7 @@ typedef enum {
 int error_flag; 
 
 /* Prints warning about error while working with stack */
-void stack_error(int error_code)
-{
+void stack_error(int error_code) {
 	static const char *SERR_STRINGS[MAX_SERR + 1] = {
 		"Unknown error",
 		"Stack error: INIT",
@@ -30,15 +29,13 @@ void stack_error(int error_code)
 		"Stack error: PUSH",
 	};
 
-	if (error_code <= 0 || error_code > MAX_SERR)
-	{
+	if (error_code <= 0 || error_code > MAX_SERR) {
 		error_code = 0;
 	}
 
 	printf("%s\n", SERR_STRINGS[error_code]);
 	error_flag = 1;
 }
-
 
 /* Will set top of stack */
 void stack_init(NodeStack *stack) {
@@ -65,8 +62,7 @@ int stack_full(const NodeStack *stack) {
 /* Returns pointer to node from top of the stack */
 Node* stack_top(const NodeStack *stack) {
 
-	if (stack_empty(stack))
-	{
+	if (stack_empty(stack)) {
 		stack_error(SERR_TOP);
 		return NULL;
 	}
@@ -77,8 +73,7 @@ Node* stack_top(const NodeStack *stack) {
 /* Removes node from top of the stack (decreases top by 1) */
 void stack_pop(NodeStack *stack) {
 
-	if (!stack_empty(stack))
-	{
+	if (!stack_empty(stack)) {
 		stack->top--;
 	}
 	else {
@@ -89,8 +84,7 @@ void stack_pop(NodeStack *stack) {
 /* Puts node on top of stack */
 void stack_push(NodeStack *stack, Node *node) {
 
-	if (stack_full(stack))
-	{
+	if (stack_full(stack)) {
 		stack_error(SERR_PUSH);
 		return;
 	}

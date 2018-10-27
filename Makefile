@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-std=c99 -Wall -pedantic
+CFLAGS=-std=gnu99 -Wall -pedantic
 
 all: main
 
