@@ -102,9 +102,9 @@ void print_coloring(int *min_colored_array, int min_chromatic_num,
 		// TODO: Drop the occasional newline in printed solution
 		// TODO: Change indexes to +1
 		// ###################
-		printf("|———————————————————|———————————————————|———————————————————|\n");
+		printf("+———————————————————+———————————————————+———————————————————+\n");
 		printf("%-20s%-20s%-20s|\n","| NODE ID", "| COLOR", "| NEIGHBORS");
-		printf("|———————————————————|———————————————————|———————————————————|\n");
+		printf("+———————————————————+———————————————————+———————————————————+\n");
 
 		/* Calculate max decimal places one neighbor will take */
 		int num = num_of_nodes;
@@ -144,7 +144,7 @@ void print_coloring(int *min_colored_array, int min_chromatic_num,
 				}
 			}
 			printf("%*s|", 19 - lenght, "");
-			printf("\n|———————————————————|———————————————————|———————————————————|\n");
+			printf("\n+———————————————————+———————————————————+———————————————————+\n");
 		}
 
 		printf("\nMINIMAL CHROMATIC NUMBER: %d\n", min_chromatic_num + 1);
