@@ -2,3 +2,5 @@ main
 *.o
 *.txt
 .DS_Store
+nodes.txt
+nodes
