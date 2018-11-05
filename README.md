@@ -24,7 +24,7 @@ Pokud existuje více řešení, stačí nalézt pouze jedno. Výsledky prezentov
 3. konzultace - 15.Oct. 13:00 C127.1
 4. konzultace - 22.Oct. 13:00 C127.1
 5. konzultace - 29.Oct. 13:00 C127.1 (Zrušeno)
-6. konzultace - 05.Nov. 13:00 C127.1
+6. konzultace - 05.Nov. 13:00 C127.1 (Zrušeno)
 7. konzultace - 12.Nov. 13:00 C127.1
 8. konzultace - 26.Nov. 13:00 C127.1 FINAL!
 
