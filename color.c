@@ -21,7 +21,7 @@ CREATED:
 27.9.2018
 
 LAST CHANGE:
-27.10.2018
+04.11.2018
 
 ______________________________________________________________
 
@@ -33,6 +33,7 @@ TODO:
 - on eva -b argument is wrongly accepted
 - index colors from 0 not 1
 - fix solution print
+- diff the two errors: file opening failed VS file not found
 - create README
   - use make
   - program is started by ./main
@@ -503,9 +504,6 @@ char* parse_arguments(int argc, char** argv) {
 
 int main(int argc, char* argv[]) {
 
-	/* Start measuring time */
-	clock_t begin = clock();
-
 	/* Get graph info from file and create structures representing 
 	this graph */
 	char* filename = parse_arguments(argc, argv);
@@ -516,8 +514,15 @@ int main(int argc, char* argv[]) {
 	stack_init(&stack);
 	stack.array = calloc(num_of_nodes, sizeof(*stack.array));
 
+	/* Start measuring time */
+	clock_t begin = clock();
+
     /* Apply coloring algorithm on nodes and print solution */
     backtracking_csp(&stack, num_of_nodes);
+
+    /* Stop measuring time */
+    clock_t end = clock();
+	double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
     /* Free memory */
     for(int i = 0; i < num_of_nodes; i++) {
@@ -527,11 +532,22 @@ int main(int argc, char* argv[]) {
     free(node_array);
     free(stack.array);
 
-    /* Stop measuring time and print it */
-    clock_t end = clock();
-	double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-	if(!brief_flag)
-		printf("MEASURED TIME: %fs\n\n", time_spent);
+    /* Print measured time */
+	if(!brief_flag) {
 
-	return 0;
+		/* Prints time on 4 decimal */
+		if (time_spent < 0.000100) {
+			printf("APROXIMATE MEASURED TIME: %fs\n\n", time_spent);
+		}
+		/* Prints time in minutes and seconds if algorhitm lasts longer than a minute */
+		else if (time_spent >= 60.000000) {
+			int mins = (time_spent/60);
+			float secs = time_spent-(mins*60);
+			printf("APROXIMATE MEASURED TIME: %dmin and %0.0fs\n\n", mins, secs);
+		}
+		else {
+			printf("APROXIMATE MEASURED TIME: %0.4fs\n\n", time_spent);
+		}
+		return 0;
+	}
 }
