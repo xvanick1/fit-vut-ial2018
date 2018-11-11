@@ -30,6 +30,7 @@ NOTES:
 and multiple edges between nodes are NOT allowed
 
 TODO:
+- on eva -b argument is wrongly accepted
 - index colors from 0 not 1
 - fix solution print
 - create README
