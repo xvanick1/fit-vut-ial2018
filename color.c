@@ -30,9 +30,7 @@ NOTES:
 and multiple edges between nodes are NOT allowed
 
 TODO:
-- on eva -b argument is wrongly accepted
-- index colors from 0 not 1
-- fix solution print
+- on eva -b (brief) argument is wrongly accepted
 - diff the two errors: file opening failed VS file not found
 - create README
   - use make
@@ -45,8 +43,11 @@ TODO:
 - error handling
 - in case of error, free all allocated memory
 - check if it runs on eva
+- num_of_nodes shouldn't exceed INT_MAX
 
-- maybe try forward-checking
+DONE
+- index colors from 0 not 1
+- fix solution print
 
 */
 
@@ -57,6 +58,7 @@ TODO:
 #include <string.h>
 #include <time.h>
 #include <unistd.h> // For parsing arguments
+#include <limits.h>
 
 #include "stack.h" // For global variables and structures
 
@@ -77,7 +79,8 @@ void print_info() {
 		"Please wait for solution...\n\n");
 }
 
-/* Prints coloring of nodes */
+/* Prints coloring of nodes and their neighbors. For better comprehension
+indexes of nodes, colors and chromatic number are raised by 1 */
 void print_coloring(int *min_colored_array, int min_chromatic_num, 
 	int mode) {
 
@@ -86,9 +89,9 @@ void print_coloring(int *min_colored_array, int min_chromatic_num,
 	if(mode == NORMAL || mode == SMALLER) {
 
 		if(mode == NORMAL) 
-			printf("CHROM. NUMBER {%d}: ", min_chromatic_num);
+			printf("CHROM. NUMBER {%d}: ", min_chromatic_num + 1);
 		else 
-			printf("SMALLER CHROM. NUMBER {%d}: ", min_chromatic_num);
+			printf("SMALLER CHROM. NUMBER {%d}: ", min_chromatic_num + 1);
 
 		for (int i = 0; i < num_of_nodes; ++i) {
 			if(node_array[i].color == -1)
@@ -102,50 +105,47 @@ void print_coloring(int *min_colored_array, int min_chromatic_num,
 	else if(mode == MINIMAL) {
 
 		// TODO: Drop the occasional newline in printed solution
-		// TODO: Change indexes to +1
-		// ###################
 		printf("+———————————————————+———————————————————+———————————————————+\n");
 		printf("%-20s%-20s%-20s|\n","| NODE ID", "| COLOR", "| NEIGHBORS");
 		printf("+———————————————————+———————————————————+———————————————————+\n");
 
-		/* Calculate max decimal places one neighbor will take */
-		int num = num_of_nodes;
-		int max_dec_places = 1;
-		while(num > 10) {
-			num /= 10;
-			max_dec_places++;
-		}
-
-		/* Max neighbors that will fit the line */
-		int max_neighbors = 10 / max_dec_places;
-
 		for(int i = 0; i < num_of_nodes; i++) {
 			
-			printf("| %-18d| %-18d|", i, min_colored_array[i]);
+			/* Print node id and color */
+			printf("| %-18d| %-18d|", i + 1, min_colored_array[i] + 1);
 
-			int lenght = 0;
+			int max_chars_on_line = 18;
+
+			int lenght = 0; // length of neighbors on line
 			char neighbor[20];
 
-			int count = 0;
 			for (int j = 0; j < num_of_nodes; j++)
 			{
 				if(graph_table[i][j] == true) {
-					printf(" %d", j);
-					sprintf(neighbor, " %d", j);
-					lenght += strlen(neighbor);
 
-					if(count >= max_neighbors) {
+					/* Get char lenght of neighbor */
+					sprintf(neighbor, " %d", j + 1);
+					int neighbor_len = strlen(neighbor);
+
+					/* Neighbor won't fit on line, so it's needed to 
+					print it on next */
+					if(lenght + neighbor_len > max_chars_on_line) {
 						printf("%*s|", 19 - lenght, "");
 						printf("\n|%19s|%19s|", "", "");
-						count = 0;
-						lenght = 0;
-					}
-					else 
-						count++;
 
+						printf(" %d", j + 1);
+						lenght = neighbor_len;
+					}
+					/* Neighbor fits the line */
+					else {
+						printf(" %d", j + 1);
+						lenght += neighbor_len;
+					}
 				}
 			}
+
 			printf("%*s|", 19 - lenght, "");
+			// printf("\nlenght: %d", lenght);
 			printf("\n+———————————————————+———————————————————+———————————————————+\n");
 		}
 
@@ -371,7 +371,7 @@ void fill_node(FILE* file, Node *node, int node_id,
 				continue;
 		}
 		else if(c == '1') {
-			/* Write connection to the table */
+			/* Copy connection to the table */
 			graph_table[node_id][position] = true;
 			position++;
 			continue;
@@ -405,8 +405,8 @@ void create_graph(char* filename) {
     }
 
     /* Getting number of nodes */
-    char count[100];
-    fgets(count, 100, file); // reads 100 chars or until newline
+    char count[20];
+    fgets(count, 20, file); // reads 20 chars or until newline
     sscanf(count, "%d\n", &num_of_nodes);
     if(num_of_nodes <= 0) {
     	fprintf(stderr, "ERROR: Number of nodes is not valid\n");

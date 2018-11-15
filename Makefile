@@ -12,9 +12,9 @@ color.o: color.c stack.h
 stack.o: stack.c stack.h
 	$(CC) $(CFLAGS) -c stack.c
 
-clean-eva:
-	rm -r color.o stack.o main
-
 clean: 
-	$(RM) main *.o
+	rm -r main *.o
+
+test:
+	python3 testing.py -b 40
 
