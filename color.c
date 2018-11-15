@@ -157,6 +157,82 @@ void print_coloring(int *min_colored_array, int min_chromatic_num,
 	}
 }
 
+/* Parses arguments with getopt() function */
+char* parse_arguments(int argc, char** argv) {
+
+	char* help = 
+			"\nDESCRIPTION:\n"
+			"\tProgram for finding minimal chromatic number for undirected\n"
+			"\tgraph. In default mode prints info about graph and its\n"
+			"\tsolution.\n"
+			"\nSYNOPSIS:\n"
+			"\t./main -f FILENAME [-h] [-b]\n"
+			"\nARGUMENTS:\n"
+			"\t-f FILENAME\n"
+			"\t\tfile flag followed by name of file with graph\n"
+			"\n\t-b\n"
+			"\t\toptional flag that turns on brief node,\n"
+			"\t\tso that program prints only minimal chromatic\n"
+			"\t\tvalue of graph (used for testing)\n"
+			"\n\t-h\n"
+			"\t\tprint this message and exit\n"
+			"\n";
+
+	brief_flag = false;
+	char *filename = NULL;
+
+	/* To turn off getopt() printed errors */
+	opterr = 0;
+
+	/* Parse arguments from command line */
+	int opt;
+	while((opt = getopt(argc, argv, "f:bh")) != -1) {
+		switch (opt) {
+			case 'f':
+				filename = optarg;
+				break;
+	        case 'b': 
+	        	brief_flag = true; 
+	        	break;
+	        case 'h': 
+	        	printf("%s", help);
+		        exit(EXIT_SUCCESS);
+	        	break;
+
+	        case '?':
+	        	if(optopt == 'f')
+	        		fprintf(stderr, "ERROR: Option -%c requires an argument\n", optopt);
+	        	else if(isprint(optopt))
+	        		fprintf(stderr, "ERROR: Unknown option -%c\n", optopt);
+	        	else 
+	        		fprintf (stderr, "ERROR: Unknown option character `\\x%x'\n", optopt);
+	        	
+	        	printf("%s", help);
+	            exit(EXIT_FAILURE);
+
+	        default:
+	            printf("%s", help);
+	            exit(EXIT_FAILURE);
+        }
+	}
+
+	/* Unknown non-option arguments are not allowed */
+	for (int i = optind; i < argc; i++) {
+	    fprintf(stderr, "ERROR: Unknown non-option argument '%s'\n", argv[i]);
+	    printf("%s", help);
+	    exit(EXIT_FAILURE);
+	}
+
+	/* Filename argument is mandatory */
+	if(filename == NULL) {
+		fprintf(stderr, "ERROR: Filename argument is mandatory\n");
+		printf("%s", help);
+        exit(EXIT_FAILURE);
+    }
+
+	return filename;
+}
+
 /* Checks if matrix representing graph is symmetrical by diagonal
 and that it doesn't contain self-loops. Otherwise it ends program */
 void check_matrix() {
@@ -440,67 +516,6 @@ void create_graph(char* filename) {
     return;
 }
 
-char* parse_arguments(int argc, char** argv) {
-
-	char* help = 
-			"\nDESCRIPTION:\n"
-			"\tProgram for finding minimal chromatic number for undirected\n"
-			"\tgraph. In default mode prints info about graph and its\n"
-			"\tsolution.\n"
-			"\nSYNOPSIS:\n"
-			"\t./main FILENAME [-h] [-b]\n"
-			"\nARGUMENTS:\n"
-			"\tFILENAME\n"
-			"\t\tname of file with graph\n"
-			"\n\t-b\n"
-			"\t\toptional flag that turns on brief node,\n"
-			"\t\tso program prints only minimal chromatic\n"
-			"\t\tvalue of graph (used for testing)\n"
-			"\n\t-h\n"
-			"\t\tprint this message and exit\n"
-			"\n";
-
-	brief_flag = false;
-	char *filename = NULL;
-
-	int opt;
-	while((opt = getopt(argc, argv, "bh")) != -1) {
-		switch (opt) {
-	        case 'b': 
-	        	brief_flag = true; 
-	        	break;
-	        case 'h': 
-	        	printf("%s", help);
-		        exit(EXIT_FAILURE);
-	        	break;
-	        default:
-	            printf("%s", help);
-	            exit(EXIT_FAILURE);
-        }
-	}
-
-	/* Only 1 non-option argument is allowed for filename. Function
-	getopt() will put all non-option arguments to end of argv array
-	and variable optind is index of first non-option argument */
-	for (int i = optind; i < argc; i++) {
-		if(i == optind)
-			filename = argv[i];
-		else {
-			fprintf(stderr, "ERROR: Only 1 non-option argument is allowed\n");
-			printf("%s", help);
-	        exit(EXIT_FAILURE);
-		}
-	}
-
-	/* Filename argument is mandatory */
-	if(filename == NULL) {
-		fprintf(stderr, "ERROR: Filename argument is mandatory\n");
-		printf("%s", help);
-        exit(EXIT_FAILURE);
-    }
-
-	return filename;
-}
 
 int main(int argc, char* argv[]) {
 
