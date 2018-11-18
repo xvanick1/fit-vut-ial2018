@@ -486,9 +486,9 @@ void create_graph(char* filename) {
     }
 
     /* Getting number of nodes */
-    char max_num_len[11]; // 11 places is for INT_MAX value
-    /* fgets() reads 20 chars or until newline */
-    if(fgets(max_num_len, 20, file) == NULL) {
+    char max_num_len[11]; // 10 places is for INT_MAX value, 1 for '\0'
+    /* fgets() reads 10 chars or until newline */
+    if(fgets(max_num_len, 11, file) == NULL) {
     	fprintf(stderr, "ERROR: fgets() failed to read number of nodes\n");
     	exit(EXIT_FAILURE);
     }
