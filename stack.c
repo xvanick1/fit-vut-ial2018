@@ -8,40 +8,17 @@ by 3rd IAL presentation
 
 #include "stack.h"
 
-#define MAX_SERR 4
-
-typedef enum {
-	SERR_INIT = 1,
-	SERR_TOP = 2,
-	SERR_POP = 3,
-	SERR_PUSH = 4
-} STACK_ERROR;
-
-int error_flag; 
-
-/* Prints warning about error while working with stack */
-void stack_error(int error_code) {
-	static const char *SERR_STRINGS[MAX_SERR + 1] = {
-		"Unknown error",
-		"Stack error: INIT",
-		"Stack error: TOP",
-		"Stack error: POP",
-		"Stack error: PUSH",
-	};
-
-	if (error_code <= 0 || error_code > MAX_SERR) {
-		error_code = 0;
-	}
-
-	printf("%s\n", SERR_STRINGS[error_code]);
-	error_flag = 1;
+/* Prints warning about error while working with stack end exits */
+void stack_error(char* error_string) {
+	printf("%s\n", error_string);
+	exit(EXIT_FAILURE);
 }
 
 /* Will set top of stack */
 void stack_init(NodeStack *stack) {
 
 	if(stack == NULL) {
-		stack_error(SERR_INIT);
+		stack_error("STACK ERROR: Init");
 		return;
 	}
 
@@ -63,7 +40,7 @@ int stack_full(const NodeStack *stack) {
 Node* stack_top(const NodeStack *stack) {
 
 	if (stack_empty(stack)) {
-		stack_error(SERR_TOP);
+		stack_error("STACK ERROR: Top");
 		return NULL;
 	}
 
@@ -77,7 +54,7 @@ void stack_pop(NodeStack *stack) {
 		stack->top--;
 	}
 	else {
-		stack_error(SERR_POP);
+		stack_error("STACK ERROR: Pop");
 	}
 }
 
@@ -85,7 +62,7 @@ void stack_pop(NodeStack *stack) {
 void stack_push(NodeStack *stack, Node *node) {
 
 	if (stack_full(stack)) {
-		stack_error(SERR_PUSH);
+		stack_error("STACK ERROR: Push");
 		return;
 	}
 

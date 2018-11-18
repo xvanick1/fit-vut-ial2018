@@ -10,7 +10,7 @@ typedef struct {
 } Node;
 
 /* Heavily used data types, */
-bool **graph_table;
+bool *graph_table;
 Node *node_array;
 
 /* Stack of pointers to nodes, that are actually in node_array */

@@ -4,7 +4,7 @@ FILE NAME:
 color.c
 
 PROJECT IDENTIFICATION: 
-"6. Obarvení grafu" - substitute project from IAL course
+"6. Obarveni grafu" - substitute project from IAL course
 
 AUTHORS:
 - Josef Adamek (xadame42)
@@ -28,10 +28,10 @@ ______________________________________________________________
 NOTES:
 - in this implementation self-loops (node connected to itself) 
 and multiple edges between nodes are NOT allowed
+- not gonna use atexit() since apparently on moderns systems memory
+will get taken care of automatically after using exit()
 
 TODO:
-- on eva -b (brief) argument is wrongly accepted
-- diff the two errors: file opening failed VS file not found
 - create README
   - use make
   - program is started by ./main
@@ -40,14 +40,16 @@ TODO:
 - headers in each program file
 - create 5-10 good test graphs
 - finish documentation
-- error handling
-- in case of error, free all allocated memory
-- check if it runs on eva
-- num_of_nodes shouldn't exceed INT_MAX
+- at last check if it runs on eva and with valgrind
 
 DONE
-- index colors from 0 not 1
+- index nodes and colors from 0 not 1
 - fix solution print
+- on eva -b (brief) argument is wrongly accepted
+- make 2D node matrix into 1D for optimization 
+- diff the two errors: file opening failed VS file not found
+- num_of_nodes shouldn't exceed INT_MAX
+- error handling
 
 */
 
@@ -104,7 +106,6 @@ void print_coloring(int *min_colored_array, int min_chromatic_num,
 
 	else if(mode == MINIMAL) {
 
-		// TODO: Drop the occasional newline in printed solution
 		printf("+———————————————————+———————————————————+———————————————————+\n");
 		printf("%-20s%-20s%-20s|\n","| NODE ID", "| COLOR", "| NEIGHBORS");
 		printf("+———————————————————+———————————————————+———————————————————+\n");
@@ -121,7 +122,7 @@ void print_coloring(int *min_colored_array, int min_chromatic_num,
 
 			for (int j = 0; j < num_of_nodes; j++)
 			{
-				if(graph_table[i][j] == true) {
+				if(graph_table[i * num_of_nodes + j] == true) {
 
 					/* Get char lenght of neighbor */
 					sprintf(neighbor, " %d", j + 1);
@@ -150,10 +151,6 @@ void print_coloring(int *min_colored_array, int min_chromatic_num,
 		}
 
 		printf("\nMINIMAL CHROMATIC NUMBER: %d\n", min_chromatic_num + 1);
-	}
-
-	else {
-		fprintf(stderr, "ERROR!\n");
 	}
 }
 
@@ -239,15 +236,16 @@ void check_matrix() {
 	int diagonal = 0;
 	for (int i = 0; i < num_of_nodes; i++)
 	{
-		if(graph_table[i][diagonal] == 1) {
-			fprintf(stderr, "Self-loops are not allowed!\n");
-			exit(1);
+		if(graph_table[i * num_of_nodes + diagonal] == 1) {
+			fprintf(stderr, "ERROR: Self-loops are not allowed\n");
+			exit(EXIT_FAILURE);
 		}
 		for (int j = diagonal; j < num_of_nodes; j++)
-			if(graph_table[i][j] != graph_table[j][i]) 
+			if(graph_table[i * num_of_nodes + j] != 
+				graph_table[j * num_of_nodes + i]) 
 			{
-				fprintf(stderr, "Input graph is not undirected!\n");
-				exit(1);
+				fprintf(stderr, "ERROR: Input graph is not undirected\n");
+				exit(EXIT_FAILURE);
 			}
 		diagonal++;
 	}
@@ -323,13 +321,12 @@ int get_color(bool* colors, Node* node, int num_of_nodes,
 	for(int i = 0; i < num_of_nodes; i++) {
 
 		/* Neighbor was found */
-		if(graph_table[node->id][i] == true) {
+		if(graph_table[node->id * num_of_nodes + i] == true) {
 
 			/* Set color of neighbor as unavailable */
 			int neighbor_color = node_array[i].color;
 			if(neighbor_color != -1)
 				colors[neighbor_color] = false;
-
 		}
 	}
 
@@ -347,7 +344,6 @@ int get_color(bool* colors, Node* node, int num_of_nodes,
 		}
 	}
 
-
 	/* available_color == 0 means this node won't get any color */
 	return available_color;
 }
@@ -358,7 +354,11 @@ void backtracking_csp(NodeStack *stack, int num_of_nodes) {
 	graphs with property colors == nodes get solution saved to array */
 	int min_chromatic_num = num_of_nodes;
 	int *min_colored_array = calloc(num_of_nodes, sizeof(*min_colored_array));
-	
+	if(min_colored_array == NULL) {
+		perror("ERROR: Memory allocation failed");
+		exit(EXIT_FAILURE);
+	}
+
 	for(int i = 0; i < num_of_nodes; i++) {
 		min_colored_array[i] = -1;
 	}
@@ -366,6 +366,10 @@ void backtracking_csp(NodeStack *stack, int num_of_nodes) {
 	/* For saving colors of neighbors and then finding lowest 
 	available */ 
 	bool *colors = calloc(num_of_nodes, sizeof(*colors));
+	if(colors == NULL) {
+		perror("ERROR: Memory allocation failed");
+		exit(EXIT_FAILURE);
+	}
 
 	/* Pushing first node to stack */
 	stack_push(stack, &(node_array[0]));
@@ -434,11 +438,11 @@ void fill_node(FILE* file, Node *node, int node_id,
 	node->color = -1;
 
 	char c;
-	int position = 0;
+	int column = 0;
 	while((c = getc(file)) != EOF) {
-		if(position > num_of_nodes) {
-			fprintf(stderr, "Wrong file formatting\n");
-			exit(1);
+		if(column > num_of_nodes) {
+			fprintf(stderr, "ERROR: Graph matrix is not square\n");
+			exit(EXIT_FAILURE);
 		}
 		else if(isspace(c)) {
 			if(c == '\n')
@@ -448,24 +452,24 @@ void fill_node(FILE* file, Node *node, int node_id,
 		}
 		else if(c == '1') {
 			/* Copy connection to the table */
-			graph_table[node_id][position] = true;
-			position++;
+			graph_table[node_id * num_of_nodes + column] = true;
+			column++;
 			continue;
 		}
 		else if(c == '0') {
-			graph_table[node_id][position] = false;
-			position++;
+			graph_table[node_id * num_of_nodes + column] = false;
+			column++;
 			continue;
 		}
 		else {
-			fprintf(stderr, "Wrong file formatting\n");
-			exit(1);
+			fprintf(stderr, "ERROR: Wrong file formatting\n");
+			exit(EXIT_FAILURE);
 		}
 	}
 
-	if(position < num_of_nodes) {
-		fprintf(stderr, "Wrong file formatting\n");
-		exit(1);
+	if(column < num_of_nodes) {
+		fprintf(stderr, "ERROR: Graph matrix is not square\n");
+		exit(EXIT_FAILURE);
 	}
 }
 
@@ -476,28 +480,39 @@ void create_graph(char* filename) {
 	FILE *file;
     file = fopen(filename,"r");
     if(file == NULL) {
-        fprintf(stderr, "ERROR: File opening failed\n");
-        exit(1);
+        /* perror() will show message based on set errno */
+        perror("ERROR: File opening failed");
+        exit(EXIT_FAILURE);
     }
 
     /* Getting number of nodes */
-    char count[20];
-    fgets(count, 20, file); // reads 20 chars or until newline
-    sscanf(count, "%d\n", &num_of_nodes);
-    if(num_of_nodes <= 0) {
-    	fprintf(stderr, "ERROR: Number of nodes is not valid\n");
-        exit(-1);
+    char max_num_len[11]; // 11 places is for INT_MAX value
+    /* fgets() reads 20 chars or until newline */
+    if(fgets(max_num_len, 20, file) == NULL) {
+    	fprintf(stderr, "ERROR: fgets() failed to read number of nodes\n");
+    	exit(EXIT_FAILURE);
+    }
+    sscanf(max_num_len, "%d\n", &num_of_nodes);
+    if(num_of_nodes <= 0 || num_of_nodes > INT_MAX) {
+    	fprintf(stderr, "ERROR: Number of nodes is not valid - must be "
+    		"in interval <1; %d>\n", INT_MAX);
+        exit(EXIT_FAILURE);
     } 
 
     /* Node array where nodes are expected to be organized by id 
     for simple lookup by index of array */
 	node_array = calloc(num_of_nodes, sizeof(*node_array));
+	if(node_array == NULL) {
+		perror("ERROR: Memory allocation failed");
+		exit(EXIT_FAILURE);
+	}
 
-    /* Empty boolean matrix representing graph */
-    graph_table = calloc(num_of_nodes, sizeof(*graph_table));
-    for (int i = 0; i < num_of_nodes; i++) {
-    	graph_table[i] = calloc(num_of_nodes, sizeof(*graph_table[i]));
-    }
+    /* Empty boolean array representing matrix representing graph */
+    graph_table = calloc(num_of_nodes * num_of_nodes, sizeof(*graph_table));
+	if(graph_table == NULL) {
+		perror("ERROR: Memory allocation failed");
+		exit(EXIT_FAILURE);
+	}
 
     /* Getting nodes from file */
     for(int i = 0; i < num_of_nodes; i++) {
@@ -508,10 +523,10 @@ void create_graph(char* filename) {
     self-loops, exit */
     check_matrix();
     
-    fclose(file); 
-
     /* Print info */
     print_info();
+
+    fclose(file); 
 
     return;
 }
@@ -528,6 +543,10 @@ int main(int argc, char* argv[]) {
     NodeStack stack;
 	stack_init(&stack);
 	stack.array = calloc(num_of_nodes, sizeof(*stack.array));
+	if(stack.array == NULL) {
+		perror("ERROR: Memory allocation failed");
+		exit(EXIT_FAILURE);
+	}
 
 	/* Start measuring time */
 	clock_t begin = clock();
@@ -540,9 +559,6 @@ int main(int argc, char* argv[]) {
 	double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
     /* Free memory */
-    for(int i = 0; i < num_of_nodes; i++) {
-    	free(graph_table[i]);
-    }
     free(graph_table);
     free(node_array);
     free(stack.array);
