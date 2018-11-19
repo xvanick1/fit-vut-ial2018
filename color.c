@@ -146,7 +146,6 @@ void print_coloring(int *min_colored_array, int min_chromatic_num,
 			}
 
 			printf("%*s|", 19 - lenght, "");
-			// printf("\nlenght: %d", lenght);
 			printf("\n+———————————————————+———————————————————+———————————————————+\n");
 		}
 
