@@ -33,9 +33,6 @@ will get taken care of automatically after using exit()
 
 TODO:
 - create README
-  - use make
-  - program is started by ./main
-  - file with graph must be in format count, matrix of connections
 
 - headers in each program file
 - create 5-10 good test graphs
@@ -165,11 +162,12 @@ char* parse_arguments(int argc, char** argv) {
 			"\t./main -f FILENAME [-h] [-b]\n"
 			"\nARGUMENTS:\n"
 			"\t-f FILENAME\n"
-			"\t\tfile flag followed by name of file with graph\n"
+			"\t\tfile flag followed by name of file with graph,\n"
+			"\t\tallowed file extensions are .txt, .in or none\n"
 			"\n\t-b\n"
 			"\t\toptional flag that turns on brief node,\n"
 			"\t\tso that program prints only minimal chromatic\n"
-			"\t\tvalue of graph (used for testing)\n"
+			"\t\tvalue of graph (used for testing with -f flag)\n"
 			"\n\t-h\n"
 			"\t\tprint this message and exit\n"
 			"\n";
@@ -224,6 +222,34 @@ char* parse_arguments(int argc, char** argv) {
 		fprintf(stderr, "ERROR: Filename argument is mandatory\n");
 		printf("%s", help);
         exit(EXIT_FAILURE);
+    }
+
+    /* Checking if file has right extension - none, .txt or .in */
+    bool dotflag = false;
+    char ext[4] = {0};
+    int count = 0;
+    for(int i = 0; i < strlen(filename); i++) {
+
+    	/* Checking dot */
+    	if(filename[i] == '.' && dotflag == false) {
+    		dotflag = true;
+    		continue;
+    	}
+
+    	/* Loading the extension */
+    	if(dotflag == true && count < 3) {
+    		ext[count] = filename[i];
+    		count++;
+    	}
+    }
+
+    if(dotflag) {
+    	int txt = strcmp(ext,"txt");
+    	int in = strcmp(ext,"in");
+	    if(!((txt == 0 && in != 0) || (txt != 0 && in == 0))) {
+	    	fprintf(stderr, "ERROR: Bad file extension (allowed: .txt, .in or none)\n");
+	    	exit(EXIT_FAILURE);
+	    }
     }
 
 	return filename;
