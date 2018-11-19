@@ -1,5 +1,8 @@
 main
 *.o
 .DS_Store
-nodes.txt
+dokumentace.log
+dokumentace.toc
+dokumentace.aux
+
 nodes

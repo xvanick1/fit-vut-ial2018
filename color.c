@@ -399,7 +399,7 @@ void backtracking_csp(NodeStack *stack, int num_of_nodes) {
 	/* Pushing first node to stack */
 	stack_push(stack, &(node_array[0]));
 
-	while(42) {
+	while(true) {
 
 		/* No more nodes on stack means all wanted color variations 
 		were tried already */
