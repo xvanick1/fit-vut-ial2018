@@ -1,16 +1,14 @@
 CC=gcc
 CFLAGS=-std=gnu99 -Wall -pedantic
 
-all: main
+all: helpers.o main.o
+	$(CC) $(CFLAGS) -o main helpers.o main.o 
 
-main: stack.o color.o
-	$(CC) $(CFLAGS) -o main stack.o color.o 
+main.o: main.c helpers.h 
+	$(CC) $(CFLAGS) -c main.c
 
-color.o: color.c stack.h 
-	$(CC) $(CFLAGS) -c color.c
-
-stack.o: stack.c stack.h
-	$(CC) $(CFLAGS) -c stack.c
+helpers.o: helpers.c helpers.h
+	$(CC) $(CFLAGS) -c helpers.c
 
 clean: 
 	rm -r main *.o

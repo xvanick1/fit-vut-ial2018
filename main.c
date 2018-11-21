@@ -65,229 +65,13 @@ DONE
 #include <ctype.h>
 #include <string.h>
 #include <time.h>
-#include <unistd.h> // For parsing arguments
 #include <limits.h>
 
-#include "stack.h" // For global variables and structures
-
-/* For printing solution */
-typedef enum {
-	NORMAL,
-	SMALLER,
-	MINIMAL
-} MODE;
-
-/* Prints nodes info */
-void print_info() {
-
-	if(brief_flag) return;
-
-	printf("\nNUMBER OF NODES: %d\n", num_of_nodes);
-	printf("INFO: File with nodes loaded successfully. "
-		"Please wait for solution...\n\n");
-}
-
-/* Prints coloring of nodes and their neighbors. For better comprehension
-indexes of nodes, colors and chromatic number are raised by 1 */
-void print_coloring(int *min_colored_array, int min_chromatic_num, 
-	int mode) {
-
-	if(brief_flag) return;
-
-	if(mode == NORMAL || mode == SMALLER) {
-
-		if(mode == NORMAL) 
-			printf("CHROM. NUMBER {%d}: ", min_chromatic_num);
-		else 
-			printf("SMALLER CHROM. NUMBER {%d}: ", min_chromatic_num);
-
-		for (int i = 0; i < num_of_nodes; ++i) {
-			if(node_array[i].color == -1)
-				printf(" -");
-			else
-				printf(" %d", node_array[i].color);
-		}
-		printf("\n");
-	}
-
-	else if(mode == MINIMAL) {
-
-		printf("+———————————————————+———————————————————+———————————————————+\n");
-		printf("%-20s%-20s%-20s|\n","| NODE ID", "| COLOR", "| NEIGHBORS");
-		printf("+———————————————————+———————————————————+———————————————————+\n");
-
-		for(int i = 0; i < num_of_nodes; i++) {
-			
-			/* Print node id and color */
-			printf("| %-18d| %-18d|", i + 1, min_colored_array[i] + 1);
-
-			int max_chars_on_line = 18;
-
-			int lenght = 0; // length of neighbors on line
-			char neighbor[20];
-
-			for (int j = 0; j < num_of_nodes; j++)
-			{
-				if(graph_table[i * num_of_nodes + j] == true) {
-
-					/* Get char lenght of neighbor */
-					sprintf(neighbor, " %d", j + 1);
-					int neighbor_len = strlen(neighbor);
-
-					/* Neighbor won't fit on line, so it's needed to 
-					print it on next */
-					if(lenght + neighbor_len > max_chars_on_line) {
-						printf("%*s|", 19 - lenght, "");
-						printf("\n|%19s|%19s|", "", "");
-
-						printf(" %d", j + 1);
-						lenght = neighbor_len;
-					}
-					/* Neighbor fits the line */
-					else {
-						printf(" %d", j + 1);
-						lenght += neighbor_len;
-					}
-				}
-			}
-
-			printf("%*s|", 19 - lenght, "");
-			printf("\n+———————————————————+———————————————————+———————————————————+\n");
-		}
-
-		printf("\nMINIMAL CHROMATIC NUMBER: %d\n", min_chromatic_num + 1);
-	}
-}
-
-/* Parses arguments with getopt() function */
-char* parse_arguments(int argc, char** argv) {
-
-	char* help = 
-			"\nDESCRIPTION:\n"
-			"\tProgram for finding minimal chromatic number for undirected\n"
-			"\tgraph. In default mode prints info about graph and its\n"
-			"\tsolution.\n"
-			"\nSYNOPSIS:\n"
-			"\t./main -f FILENAME [-h] [-b]\n"
-			"\nARGUMENTS:\n"
-			"\t-f FILENAME\n"
-			"\t\tfile flag followed by name of file with graph,\n"
-			"\t\tallowed file extensions are .txt, .in or none\n"
-			"\n\t-b\n"
-			"\t\toptional flag that turns on brief node,\n"
-			"\t\tso that program prints only minimal chromatic\n"
-			"\t\tvalue of graph (used for testing with -f flag)\n"
-			"\n\t-h\n"
-			"\t\tprint this message and exit\n"
-			"\n";
-
-	brief_flag = false;
-	char *filename = NULL;
-
-	/* To turn off getopt() printed errors */
-	opterr = 0;
-
-	/* Parse arguments from command line */
-	int opt;
-	while((opt = getopt(argc, argv, "f:bh")) != -1) {
-		switch (opt) {
-			case 'f':
-				filename = optarg;
-				break;
-	        case 'b': 
-	        	brief_flag = true; 
-	        	break;
-	        case 'h': 
-	        	printf("%s", help);
-		        exit(EXIT_SUCCESS);
-	        	break;
-
-	        case '?':
-	        	if(optopt == 'f')
-	        		fprintf(stderr, "ERROR: Option -%c requires an argument\n", optopt);
-	        	else if(isprint(optopt))
-	        		fprintf(stderr, "ERROR: Unknown option -%c\n", optopt);
-	        	else 
-	        		fprintf (stderr, "ERROR: Unknown option character `\\x%x'\n", optopt);
-	        	
-	        	printf("%s", help);
-	            exit(EXIT_FAILURE);
-
-	        default:
-	            printf("%s", help);
-	            exit(EXIT_FAILURE);
-        }
-	}
-
-	/* Unknown non-option arguments are not allowed */
-	for (int i = optind; i < argc; i++) {
-	    fprintf(stderr, "ERROR: Unknown non-option argument '%s'\n", argv[i]);
-	    printf("%s", help);
-	    exit(EXIT_FAILURE);
-	}
-
-	/* Filename argument is mandatory */
-	if(filename == NULL) {
-		fprintf(stderr, "ERROR: Filename argument is mandatory\n");
-		printf("%s", help);
-        exit(EXIT_FAILURE);
-    }
-
-    /* Checking if file has right extension - none, .txt or .in */
-    bool dotflag = false;
-    char ext[4] = {0};
-    int count = 0;
-    for(int i = 0; i < strlen(filename); i++) {
-
-    	/* Checking dot */
-    	if(filename[i] == '.' && dotflag == false) {
-    		dotflag = true;
-    		continue;
-    	}
-
-    	/* Loading the extension */
-    	if(dotflag == true && count < 3) {
-    		ext[count] = filename[i];
-    		count++;
-    	}
-    }
-
-    if(dotflag) {
-    	bool txt = (strcmp(ext,"txt") == 0);
-    	bool in = (strcmp(ext,"in") == 0);
-    	if(!txt && !in) {
-	    	fprintf(stderr, "ERROR: Bad file extension (allowed: .txt, .in or none)\n");
-	    	exit(EXIT_FAILURE);
-	    }
-    }
-
-	return filename;
-}
-
-/* Checks if matrix representing graph is symmetrical by diagonal
-and that it doesn't contain self-loops. Otherwise it ends program */
-void check_matrix() {
-	int diagonal = 0;
-	for (int i = 0; i < num_of_nodes; i++)
-	{
-		if(graph_table[i * num_of_nodes + diagonal] == 1) {
-			fprintf(stderr, "ERROR: Self-loops are not allowed\n");
-			exit(EXIT_FAILURE);
-		}
-		for (int j = diagonal; j < num_of_nodes; j++)
-			if(graph_table[i * num_of_nodes + j] != 
-				graph_table[j * num_of_nodes + i]) 
-			{
-				fprintf(stderr, "ERROR: Input graph is not undirected\n");
-				exit(EXIT_FAILURE);
-			}
-		diagonal++;
-	}
-}
+#include "helpers.h" // For global variables and structures
 
 /* Makes sure only minimal solution gets saved to array */
-void success(NodeStack *stack, int *min_colored_array, int num_of_nodes, 
-	int *min_chromatic_num) {
+void success(int *min_colored_array, int num_of_nodes, 
+	int *min_chromatic_num, int *id) {
 
 	/* Getting max color from node array */
 	int max_color = -1; 
@@ -311,14 +95,15 @@ void success(NodeStack *stack, int *min_colored_array, int num_of_nodes,
 
 		/* OPTIMIZATION #3
 		Find the first node from left in min_colored_array, that has color
-		same as min_chromatic_num and pop it and all neighbors next to its
-		right, because this part of tree is useless for our cause */
+		same as min_chromatic_num and cancel this branch, 
+		because this part of tree is useless for our cause */
 		int useless = -1;
-		for (int i = 0; i < num_of_nodes; i++)
+		for (int i = 0; i < num_of_nodes; i++) {
 			if(min_colored_array[i] == *min_chromatic_num) {
 				useless = i;
 				break;
 			}
+		}
 
 		/* Also colors of those nodes needs to be set to -1,
 		because they won't get available_color = -1 in get_color() */
@@ -326,15 +111,18 @@ void success(NodeStack *stack, int *min_colored_array, int num_of_nodes,
 
 			/* Pop useless nodes and cancel their colors */
 			while(1) {
-				int top_id = stack_top(stack)->id;
+				// int top_id = stack_top(stack)->id;
+				int top_id = *id; // current node
 				if(top_id != useless) {
 					node_array[top_id].color = -1;
-					stack_pop(stack);
+					// stack_pop(stack);
+					(*id)--;
 				}
 				/* Leftmost useless node was found */
 				else {
 					node_array[top_id].color = -1;
-					stack_pop(stack);
+					// stack_pop(stack);
+					(*id)--;
 					break;
 				}
 			}
@@ -387,7 +175,7 @@ int get_color(bool* colors, Node* node, int num_of_nodes,
 	return available_color;
 }
 
-void backtracking_csp(NodeStack *stack, int num_of_nodes) {
+void backtracking_csp() {
 
 	/* min_chromatic_num must be at start equal to num_of_nodes, so
 	graphs with property colors == nodes get solution saved to array */
@@ -410,20 +198,20 @@ void backtracking_csp(NodeStack *stack, int num_of_nodes) {
 		exit(EXIT_FAILURE);
 	}
 
-	/* Pushing first node to stack */
-	stack_push(stack, &(node_array[0]));
+	/* Root of solution tree is first node in node_array */
+	int id = 0;
+
 
 	while(true) {
 
-		/* No more nodes on stack means all wanted color variations 
-		were tried already */
-		if(stack_empty(stack)) {
+		/* If all color variations were tried already, stop */
+		if(id == -1) {
 			break;
 		}
 		else {
 
 			/* Choose color for node on top of stack */ 
-			Node *node = stack_top(stack);
+			Node *node = &node_array[id]; 
 			node->color =
 				get_color(colors, node, num_of_nodes, min_chromatic_num);
 
@@ -437,22 +225,23 @@ void backtracking_csp(NodeStack *stack, int num_of_nodes) {
 				was colored) */
 				if(node->id == num_of_nodes - 1) { 
 
-					success(stack, min_colored_array, num_of_nodes, 
-						&min_chromatic_num);
+					success(min_colored_array, num_of_nodes, 
+						&min_chromatic_num, &id);
 
 				}
 				/* Go down the tree */
 				else {
 
-					/* Take next node in node array */
-					int id = (stack->top) + 1;
-					stack_push(stack, &(node_array[id]));
+					/* Take next node in node array (push) */
+					id++;
 					continue;
 				}
 			}
 			/* Go up the tree */
 			else {
-				stack_pop(stack);
+
+				/* Go 1 node back in node array (pop) */
+				id--;
 				continue;
 			}
 		}
@@ -469,8 +258,7 @@ void backtracking_csp(NodeStack *stack, int num_of_nodes) {
 	free(colors);
 }
 
-void fill_node(FILE* file, Node *node, int node_id, 
-	int num_of_nodes) {
+void fill_node(FILE* file, Node *node, int node_id) {
 
 	/* Getting node id and initializing it */
 	node->id = node_id;
@@ -555,7 +343,7 @@ void create_graph(char* filename) {
 
     /* Getting nodes from file */
     for(int i = 0; i < num_of_nodes; i++) {
-    	fill_node(file, &node_array[i], i, num_of_nodes);
+    	fill_node(file, &node_array[i], i);
     }
 
     /* If graph matrix isn't symmetrical by diagonal or it contains
@@ -563,7 +351,7 @@ void create_graph(char* filename) {
     check_matrix();
     
     /* Print info */
-    print_info();
+    if(!brief_flag) print_info();
 
     fclose(file); 
 
@@ -578,20 +366,11 @@ int main(int argc, char* argv[]) {
 	char* filename = parse_arguments(argc, argv);
 	create_graph(filename);
 
-    /* Set up node stack for node pointers */
-    NodeStack stack;
-	stack_init(&stack);
-	stack.array = calloc(num_of_nodes, sizeof(*stack.array));
-	if(stack.array == NULL) {
-		perror("ERROR: Memory allocation failed");
-		exit(EXIT_FAILURE);
-	}
-
 	/* Start measuring time */
 	clock_t begin = clock();
 
     /* Apply coloring algorithm on nodes and print solution */
-    backtracking_csp(&stack, num_of_nodes);
+    backtracking_csp();
 
     /* Stop measuring time */
     clock_t end = clock();
@@ -600,7 +379,6 @@ int main(int argc, char* argv[]) {
     /* Free memory */
     free(graph_table);
     free(node_array);
-    free(stack.array);
 
     /* Print measured time */
 	if(!brief_flag) {

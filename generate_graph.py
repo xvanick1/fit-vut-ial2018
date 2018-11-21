@@ -11,7 +11,6 @@ Created graph can be:
 Use:
 python3 generate_graph.py -MODE -o OUTPUT_FILE -n NUMBER_OF_NODES
 
-TODO: Measure time of certain graphs and compare with algorithm complexity
 '''
 
 import argparse
@@ -22,26 +21,27 @@ def arguments():
 
 	parser = argparse.ArgumentParser()
 
-	mode = parser.add_mutually_exclusive_group(required=True)
-	mode.add_argument("-r", action='store_true',
+	mode = parser.add_mutually_exclusive_group()
+	mode.add_argument("-f", "--full", action='store_true',
+		help="create fully connected graph (default)")
+	mode.add_argument("-r", "--random", action='store_true',
 		help="create graph with random connections")
-	mode.add_argument("-f", action='store_true',
-		help="create fully connected graph")
-	mode.add_argument("-e", action='store_true',
+	mode.add_argument("-e", "--empty", action='store_true',
 		help="create empty graph (no connections)")
+	
+	parser.add_argument("-o", "--output",
+		help="file in which graph matrix will be written (defaults to \"nodes.txt\")")
 
 	required = parser.add_argument_group('required arguments')
-	required.add_argument("-o", "--output",
-		help="file in which graph matrix will be written", required=True)
 	required.add_argument("-n", "--nodes", 
 		help="number of nodes in graph", required=True)
 
 	return parser.parse_args()
 
-def create_matrix(args, n):
+def create_matrix(args, n, default_full):
 
 	# Randomly connected graph
-	if args.r is True:
+	if args.random:
 
 		# Create zeroed numpy 2D array
 		matrix = np.full((n, n), 0)
@@ -60,12 +60,12 @@ def create_matrix(args, n):
 		matrix = matrix + matrix.T
 
 	# Fully connected graph (without self-loops)
-	elif args.f is True:
+	elif args.full or default_full:
 		matrix = np.full((n, n), 1)
 		np.fill_diagonal(matrix, 0)
 
 	# Empty of connections
-	elif args.e is True:
+	elif args.empty:
 		matrix = np.full((n, n), 0)
 
 	return matrix
@@ -74,12 +74,24 @@ def main():
 
 	# Parsing arguments
 	args = arguments()
-	outputFile = open(args.output, 'w+')
+
+	# If filename is not provided, script will write to nodes.txt
+	if args.output:
+		outputFile = open(args.output, 'w+')
+	else:
+		outputFile = open("nodes.txt", 'w+')
+
+	# If mode is not provided, default to fully connected
+	default_full = False
+	if not (args.random or args.full or args.empty):
+		default_full = True
+
+	# Write number of nodes to file
 	n = int(args.nodes)
 	outputFile.write(str(n) + "\n")
 
 	# Fill matrix based on mode
-	matrix = create_matrix(args, n)
+	matrix = create_matrix(args, n, default_full)
 
 	# Print graph matrix to output file
 	for i in range(0, n):
