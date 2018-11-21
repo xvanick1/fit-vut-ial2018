@@ -30,14 +30,21 @@ NOTES:
 and multiple edges between nodes are NOT allowed
 - not gonna use atexit() since apparently on moderns systems memory
 will get taken care of automatically after using exit()
+- we don't have to analyze time complexity of arrays, loops or things 
+like that, since that should be included to complexity of backtracking - m^n.
+Although we could compare our program with complexity from wikipedia and that
+one paper - 2^n*n and 2.445^n
 
 TODO:
-- create README
+- should I remove stack and just use node_array and variable pointing to
+current node?
+- should I add heuristics (read section about CSP in BIG AI BOOK)
 
 - headers in each program file
 - create 5-10 good test graphs
 - finish documentation
 - at last check if it runs on eva and with valgrind
+- include changed script for generating graphs to zip 
 
 DONE
 - index nodes and colors from 0 not 1
@@ -47,6 +54,8 @@ DONE
 - diff the two errors: file opening failed VS file not found
 - num_of_nodes shouldn't exceed INT_MAX
 - error handling
+- create README
+- first node doesn't have to go through all colors
 
 */
 
@@ -88,9 +97,9 @@ void print_coloring(int *min_colored_array, int min_chromatic_num,
 	if(mode == NORMAL || mode == SMALLER) {
 
 		if(mode == NORMAL) 
-			printf("CHROM. NUMBER {%d}: ", min_chromatic_num + 1);
+			printf("CHROM. NUMBER {%d}: ", min_chromatic_num);
 		else 
-			printf("SMALLER CHROM. NUMBER {%d}: ", min_chromatic_num + 1);
+			printf("SMALLER CHROM. NUMBER {%d}: ", min_chromatic_num);
 
 		for (int i = 0; i < num_of_nodes; ++i) {
 			if(node_array[i].color == -1)
@@ -244,9 +253,9 @@ char* parse_arguments(int argc, char** argv) {
     }
 
     if(dotflag) {
-    	int txt = strcmp(ext,"txt");
-    	int in = strcmp(ext,"in");
-	    if(!((txt == 0 && in != 0) || (txt != 0 && in == 0))) {
+    	bool txt = (strcmp(ext,"txt") == 0);
+    	bool in = (strcmp(ext,"in") == 0);
+    	if(!txt && !in) {
 	    	fprintf(stderr, "ERROR: Bad file extension (allowed: .txt, .in or none)\n");
 	    	exit(EXIT_FAILURE);
 	    }
@@ -300,7 +309,7 @@ void success(NodeStack *stack, int *min_colored_array, int num_of_nodes,
 		/* Print better solution */
 		// print_coloring(min_colored_array, *min_chromatic_num, SMALLER);
 
-		/* OPTIMIZATION #2
+		/* OPTIMIZATION #3
 		Find the first node from left in min_colored_array, that has color
 		same as min_chromatic_num and pop it and all neighbors next to its
 		right, because this part of tree is useless for our cause */
@@ -313,7 +322,7 @@ void success(NodeStack *stack, int *min_colored_array, int num_of_nodes,
 
 		/* Also colors of those nodes needs to be set to -1,
 		because they won't get available_color = -1 in get_color() */
-		if(useless != -1)
+		if(useless != -1) {
 
 			/* Pop useless nodes and cancel their colors */
 			while(1) {
@@ -329,6 +338,7 @@ void success(NodeStack *stack, int *min_colored_array, int num_of_nodes,
 					break;
 				}
 			}
+		} 
 	}
 }
 
@@ -357,15 +367,19 @@ int get_color(bool* colors, Node* node, int num_of_nodes,
 
 	/* Choosing the lowest available color */
 	int available_color = -1;
-	/* Minimal color must be node's last color + 1, so that the node
-	iterates through all its possible colors */
 	/* OPTIMIZATION #1
-	Also it shouldn't get color >= than saved minimal chromatic
-	number, since we need only smaller solutions */
-	for(int i = node->color + 1; i < min_chromatic_num; i++) {
-		if(colors[i] == true) {
-			available_color = i;
-			break;
+	First node doesn't have to go through all colors, 1 is enough */
+	if(!(node->id == 0 && node->color == 0)) {
+		/* OPTIMIZATION #2
+		Node shouldn't get color >= than saved minimal chromatic
+		number, since we need only smaller solutions */
+		/* Minimal color must be node's last color + 1, so that the node
+		iterates through all its possible colors */
+		for(int i = node->color + 1; i < min_chromatic_num; i++) {
+			if(colors[i] == true) {
+				available_color = i;
+				break;
+			}
 		}
 	}
 
@@ -593,16 +607,16 @@ int main(int argc, char* argv[]) {
 
 		/* Prints time on 4 decimal */
 		if (time_spent < 0.000100) {
-			printf("APROXIMATE MEASURED TIME: %fs\n\n", time_spent);
+			printf("APPROXIMATED MEASURED TIME: %fs\n\n", time_spent);
 		}
 		/* Prints time in minutes and seconds if algorhitm lasts longer than a minute */
 		else if (time_spent >= 60.000000) {
 			int mins = (time_spent/60);
 			float secs = time_spent-(mins*60);
-			printf("APROXIMATE MEASURED TIME: %dmin and %0.0fs\n\n", mins, secs);
+			printf("APPROXIMATED MEASURED TIME: %dmin and %0.0fs\n\n", mins, secs);
 		}
 		else {
-			printf("APROXIMATE MEASURED TIME: %0.4fs\n\n", time_spent);
+			printf("APPROXIMATED MEASURED TIME: %0.4fs\n\n", time_spent);
 		}
 		return 0;
 	}
