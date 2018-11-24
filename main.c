@@ -111,17 +111,14 @@ void success(int *min_colored_array, int num_of_nodes,
 
 			/* Pop useless nodes and cancel their colors */
 			while(1) {
-				// int top_id = stack_top(stack)->id;
 				int top_id = *id; // current node
 				if(top_id != useless) {
 					node_array[top_id].color = -1;
-					// stack_pop(stack);
 					(*id)--;
 				}
 				/* Leftmost useless node was found */
 				else {
 					node_array[top_id].color = -1;
-					// stack_pop(stack);
 					(*id)--;
 					break;
 				}
@@ -210,7 +207,7 @@ void backtracking_csp() {
 		}
 		else {
 
-			/* Choose color for node on top of stack */ 
+			/* Choose color for node that has its turn */ 
 			Node *node = &node_array[id]; 
 			node->color =
 				get_color(colors, node, num_of_nodes, min_chromatic_num);
@@ -256,6 +253,149 @@ void backtracking_csp() {
 
 	free(min_colored_array);
 	free(colors);
+}
+
+void print_colors() {
+	printf("Nodes : ");
+	for(int i = 0; i < num_of_nodes; i++) {
+		printf("%d ",i);
+	}
+	printf("\n");
+	printf("Colors: ");
+	for(int i = 0; i < num_of_nodes; i++) {
+		int color = node_array[i].color;
+		if(color == -1)
+			printf("- ");
+		else
+			printf("%d ",node_array[i].color);
+	}
+	printf("\n");
+
+ //    int max_color = -1; 
+	// for (int i = 0; i < num_of_nodes; i++) {
+	// 	if(node_array[i].color > max_color) {
+	// 		max_color = node_array[i].color;
+	// 	}
+	// }
+	// printf("%d\n", max_color + 1);
+}
+
+bool forward_checking(int i) {
+
+	while(42) {
+		// printf("\ni: %d\n",i);
+		// print_colors();
+
+		/* Delete first color from color set of first node 
+		and assign it to it */
+		for(int j = 0; j < num_of_nodes; j++) {
+			if(node_array[i].color_set[j] == true) {
+				node_array[i].color = j;
+				node_array[i].color_set[j] = false;
+				break;
+			}
+		}
+		/* If wanted coloring is found, end */
+		if(i == num_of_nodes - 1) {
+			return true;
+		}
+		// if(node_array[0].color == 1) {
+		// 	return true;
+		// }
+
+		/* Delete from sets all colours that are in conflict with assigned 
+		values */
+		for(int j = i + 1; j < num_of_nodes; j++) { // j is node id
+			
+			/* Probably need to go only to i-th node included */
+			for(int k = 0; k <= i; k++) { // k is neighbor
+				
+				/* Neighbor was found */
+				if(graph_table[j * num_of_nodes + k] == true) {
+
+					/* Check if there is conflict between nodes colors,
+					and if so, drop that color from the set */
+					for(int l = 0; l < num_of_nodes; l++) { // l is color in color set
+						if(node_array[j].color_set[l] 
+							&& l == node_array[k].color) {
+							// printf("Conflict between nodes %d and %d: color %d\n",j,k,l); 
+							node_array[j].color_set[l] = false;
+							node_array[j].goback_array[l] = true; // so I can take changes back							
+						}
+					}
+				}	
+			}
+		}
+
+		/* Figuring out if some colorset of nodes from j to n is empty */
+		bool goback_flag = false;
+		for(int j = i + 1; j < num_of_nodes; j++) { // j is node id
+			bool empty = true;
+			/* Here I go through all colors in color set of node j
+			and check if some set is empty */
+			for(int k = 0; k < num_of_nodes; k++) { // k is color in color_set
+				if(node_array[j].color_set[k] == true) {
+					empty = false;
+				}
+			}
+			if(empty == true) {
+				// printf("Colorset of node %d is empty\n",j);
+				goback_flag = true;
+				break;
+			}
+		}
+
+		/* If some colorset of nodes from j to n is empty, roll back */
+		if(goback_flag) {
+			for(int j = i + 1; j < num_of_nodes; j++) {
+
+				/* The "i" instead of "num_of_nodes" is debatable */
+				/* Actually I think this should be optimized later */
+				for(int k = 0; k <= i; k++) {
+
+					/* Change things back using goback arrays */
+					if(node_array[j].goback_array[k] == true) {
+						// printf("Putting back color %d to colorset of node %d\n",k,j);
+						node_array[j].color_set[k] = true;
+						// goback array needs to have clean slate for next use
+						node_array[j].goback_array[k] = false;
+					}
+				}
+			}
+		}
+		else {
+			/* There I need to give goback arrays a clean slate in case 
+			that there is no rolling back before */
+			for(int j = i + 1; j < num_of_nodes; j++) {
+				for(int k = 0; k <= i; k++) {
+					if(node_array[j].goback_array[k] == true) {
+						node_array[j].goback_array[k] = false;
+					}
+				}
+			}
+
+			/* Recursive calling */
+			bool success = forward_checking(i + 1);
+			if(success) {
+				return success;
+			}
+		}
+
+		/* Going through the i-th node's color set and finding out, 
+		if it's empty */
+		bool empty = true;
+		for(int j = 0; j < num_of_nodes; j++) {
+			if(node_array[i].color_set[j] == true) {
+				empty = false;
+			}
+		}
+		if(empty) {
+			return false;
+		}
+		else {
+			continue;
+		}
+	}
 }
 
 void fill_node(FILE* file, Node *node, int node_id) {
@@ -346,6 +486,19 @@ void create_graph(char* filename) {
     	fill_node(file, &node_array[i], i);
     }
 
+    /* Allocating memory for color sets of nodes */
+    for(int i = 0; i < num_of_nodes; i++) {
+    	node_array[i].color_set = calloc(num_of_nodes, sizeof(*(node_array[i].color_set)));
+    	// for(int j = 0; j < num_of_nodes; j++) {
+    	// 	node_array[i].color_set[j] = true;
+    	// }
+    }
+
+	/* Allocating memory for arrays for going back in time */
+    for(int i = 0; i < num_of_nodes; i++) {
+		node_array[i].goback_array = calloc(num_of_nodes, sizeof(*(node_array[i].goback_array)));
+    }
+
     /* If graph matrix isn't symmetrical by diagonal or it contains
     self-loops, exit */
     check_matrix();
@@ -370,7 +523,26 @@ int main(int argc, char* argv[]) {
 	clock_t begin = clock();
 
     /* Apply coloring algorithm on nodes and print solution */
-    backtracking_csp();
+    // backtracking_csp();
+	for(int round = 0; round < num_of_nodes; round++) {
+
+	    /* I need to make colorsets true only to the number of the 
+	    round */
+	    for(int j = 0; j < num_of_nodes; j++) {
+	    	for(int k = 0; k <= round; k++) {
+		    	node_array[j].color_set[k] = true;
+	    	}
+		}
+		if(forward_checking(0)) {
+			printf("RESULT: %s\n", "SUCCESS");
+		    print_colors();
+			break;
+		}
+		else {
+			printf("RESULT: %s\n", "FAILURE");
+			print_colors();
+		}
+	}
 
     /* Stop measuring time */
     clock_t end = clock();
@@ -379,6 +551,10 @@ int main(int argc, char* argv[]) {
     /* Free memory */
     free(graph_table);
     free(node_array);
+    for(int i = 0; i < num_of_nodes; i++) {
+    	free(node_array[i].color_set);
+    	free(node_array[i].goback_array);
+    }
 
     /* Print measured time */
 	if(!brief_flag) {

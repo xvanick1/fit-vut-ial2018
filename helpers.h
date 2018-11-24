@@ -14,12 +14,13 @@ typedef enum {
 typedef struct {
 	int id; // id of node equals index in node_array
 	int color;
+	bool *color_set;
+	bool *goback_array;
 	// int num_of_neighbors;
 	// int *neighbors;
-	// int *set_of_available_colors;
 } Node;
 
-/* Heavily used data types, */
+/* Heavily used data types */
 bool *graph_table;
 Node *node_array;
 
