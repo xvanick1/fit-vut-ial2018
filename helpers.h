@@ -16,8 +16,6 @@ typedef struct {
 	int color;
 	bool *color_set;
 	bool *goback_array;
-	// int num_of_neighbors;
-	// int *neighbors;
 } Node;
 
 /* Heavily used data types */
