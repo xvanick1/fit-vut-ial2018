@@ -102,7 +102,7 @@ char* parse_arguments(int argc, char** argv) {
 			"\t\tfile flag followed by name of file with graph,\n"
 			"\t\tallowed file extensions are .txt, .in or none\n"
 			"\n\t-b\n"
-			"\t\toptional flag that turns on brief node,\n"
+			"\t\toptional flag that turns on brief mode,\n"
 			"\t\tso that program prints only minimal chromatic\n"
 			"\t\tvalue of graph (used for testing with -f flag)\n"
 			"\n\t-h\n"
