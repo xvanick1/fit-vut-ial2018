@@ -242,6 +242,7 @@ bool forward_checking(int i) {
 				return success;
 			}
 			else {
+				/* Rollback after comeback from recursive calling */
 				for(int j = i + 1; j < num_of_nodes; j++) {
 					/* The "i" instead of "num_of_nodes" is debatable */
 					/* Actually I think this should be optimized later */
@@ -373,7 +374,8 @@ void create_graph(char* filename) {
 
     /* Allocating memory for color sets of nodes */
     for(int i = 0; i < num_of_nodes; i++) {
-    	node_array[i].color_set = calloc(num_of_nodes, sizeof(*(node_array[i].color_set)));
+    	// *(node_array[i].color_set)
+    	node_array[i].color_set = calloc(num_of_nodes, sizeof(bool));
     }
 
     /* If graph matrix isn't symmetrical by diagonal or it contains
@@ -400,7 +402,6 @@ int main(int argc, char* argv[]) {
 	clock_t begin = clock();
 
     /* Apply coloring algorithm on nodes and print solution */
-    // backtracking_csp();
 	for(int round = 0; round < num_of_nodes; round++) {
 
 	    /* I need to make colorsets true only to the number of the 
@@ -431,10 +432,10 @@ int main(int argc, char* argv[]) {
 
     /* Free memory */
     free(graph_table);
-    free(node_array);
     for(int i = 0; i < num_of_nodes; i++) {
     	free(node_array[i].color_set);
     }
+    free(node_array);
 
     /* Print measured time */
 	if(!brief_flag) {
