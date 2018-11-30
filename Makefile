@@ -10,6 +10,9 @@ main.o: main.c helpers.h
 helpers.o: helpers.c helpers.h
 	$(CC) $(CFLAGS) -c helpers.c
 
+list.o: list.c helpers.h
+	$(CC) $(CFLAGS) -c list.c
+
 clean: 
 	rm -r main *.o
 
