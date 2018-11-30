@@ -21,7 +21,7 @@ CREATED:
 27.9.2018
 
 LAST CHANGE:
-04.11.2018
+30.11.2018
 
 ______________________________________________________________
 
@@ -36,17 +36,15 @@ Although we could compare our program with complexity from wikipedia and that
 one paper - 2^n*n and 2.445^n
 
 TODO:
-- should I remove stack and just use node_array and variable pointing to
-current node?
-- should I add heuristics (read section about CSP in BIG AI BOOK)
-
 - headers in each program file
 - create 5-10 good test graphs
 - finish documentation
 - at last check if it runs on eva and with valgrind
-- include changed script for generating graphs to zip 
+- include changed script for generating graphs to zip
 
 DONE
+- stack removed
+- used heuristics
 - index nodes and colors from 0 not 1
 - fix solution print
 - on eva -b (brief) argument is wrongly accepted

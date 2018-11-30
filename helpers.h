@@ -1,16 +1,17 @@
 #include <stdbool.h>
 
-bool brief_flag;
+bool brief_flag;	//Optional flag that turns on brief mode
 
-int num_of_nodes; // used in stack_full
+int num_of_nodes; //Number of nodes, used in function stack_full
 
-/* For printing solution */
+/* Structure for printing solution */
 typedef enum {
 	NORMAL,
 	SMALLER,
 	MINIMAL
 } MODE;
 
+/* Structure containing node parameters */
 typedef struct {
 	int id; // id of node equals index in node_array
 	int color;
@@ -24,6 +25,7 @@ typedef struct color_elem {
 	struct color_elem *right_ptr;
 	struct color_elem *left_ptr;
 } ColorElement;
+
 
 typedef struct {
 	ColorElement *first;
