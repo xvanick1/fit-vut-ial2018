@@ -1,10 +1,10 @@
 CC=gcc
 CFLAGS=-std=gnu99 -Wall -pedantic
 
-all: helpers.o main.o
-	$(CC) $(CFLAGS) -o main helpers.o main.o 
+all: helpers.o main.o list.o
+	$(CC) $(CFLAGS) -o main helpers.o main.o list.o
 
-main.o: main.c helpers.h 
+main.o: main.c helpers.h
 	$(CC) $(CFLAGS) -c main.c
 
 helpers.o: helpers.c helpers.h

@@ -92,18 +92,18 @@ void print_colors() {
 	printf("%d\n", max_color + 1);
 }
 
-// void print_sets(int i) {
-// 	printf("Node %d color: %d\n",i,node_array[i].color);
-// 	for(int j = 0; j < num_of_nodes; j++) {
-// 		printf("Node %d = {",j);
-// 		for(int k = 0; k < num_of_nodes; k++) {
-// 			if(node_array[j].color_set[k]) {
-// 				printf("%d ", k);
-// 			}
-// 		}
-// 		printf("}\n");
-// 	}
-// }
+void print_sets(int i) {
+	printf("Node %d color: %d\n",i,node_array[i].color);
+	for(int j = 0; j < num_of_nodes; j++) {
+		printf("Node %d = {",j);
+		for(int k = 0; k < num_of_nodes; k++) {
+			if(node_array[j].color_set[k]) {
+				printf("%d ", k);
+			}
+		}
+		printf("}\n");
+	}
+}
 
 /* Delete from colorsets all colors that are in conflict with assigned 
 values */
@@ -119,8 +119,12 @@ void delete_conflicting_colors(int i) {
 
 				/* Check if there is conflict between nodes colors,
 				and if so, drop that color from the set */
-				if(find_color(&node_array[j].color_set, node_array[k].color)) {
-					delete_active(&node_array[j].color_set);
+				for(int l = 0; l < num_of_nodes; l++) { // l is color in color set
+					if(node_array[j].color_set[l] 
+						&& l == node_array[k].color) {
+						// printf("Conflict between nodes %d and %d: color %d\n",k,j,l); 
+						node_array[j].color_set[l] = false;
+					}
 				}
 			}
 		}
@@ -130,39 +134,67 @@ void delete_conflicting_colors(int i) {
 /* Figuring out if some colorset of nodes from j to n is empty */
 bool is_some_colorset_empty(int i) {
 
-	for(int j = i + 1; j < num_of_nodes; j++) {
-		if((node_array[j].color_set).first == NULL) {
-			// printf("Colorset of node %d is empty: ", j);
-			// print_list(&node_array[j].color_set, j);
+	for(int j = i + 1; j < num_of_nodes; j++) { // j is node id
+		bool empty = true;
+		
+		/* Here I go through all colors in color set of node j
+		and check if some set is empty */
+		for(int k = 0; k < num_of_nodes; k++) { // k is color in color_set
+			if(node_array[j].color_set[k] == true) {
+				empty = false;
+			}
+		}
+		if(empty == true) {
+			// printf("Fail: Colorset of node %d is empty\n",j);
 			return true;
 		}
 	}
 	return false;
 }
 
+/* If some colorset of nodes from j to n is empty, roll back */
+// void go_back(int i, bool *node_sets) {
+
+// }
+
 bool forward_checking(int i) {
 
-	// printf("\nLEVEL %d of recursion\n",i);
 	/* Save colorsets of nodes from i+1 to n for use in case of rollback */
-	/* Array of lists (for all nodes, even though only i+1 fields are used )*/
-	ColorList *node_sets = calloc(num_of_nodes, sizeof(*node_sets));
+	/* Pointer to array of arrays of bools */
+	bool **node_sets = calloc(num_of_nodes, sizeof(*node_sets));
 	for(int j = i+1; j < num_of_nodes; j++) {
-		ColorList copy;
-		// printf("Original: ");
-		// print_list(&node_array[j].color_set, j);
-		copy_list(&node_array[j].color_set, &copy);
-		node_sets[j] = copy;
-		// printf("Copy: ");
-		// print_list(&node_array[j].color_set, j);
+		node_sets[j] = calloc(num_of_nodes, sizeof(**node_sets));
+		for(int k = 0; k < num_of_nodes; k++) {
+			// probably not needed because of calloc
+			node_sets[j][k] = false; 
+		}
+	}
+	/* Iterate through nodes */
+	for(int j = i+1; j < num_of_nodes; j++) {
+		/* Iterate through their bool arrays */
+		// printf("Node %d: { ",j);
+		for(int k = 0; k < num_of_nodes; k++) {
+			node_sets[j][k] = node_array[j].color_set[k];
+			// if(node_sets[j][k])
+			// printf("%d ",k);
+		}
+		// printf("}\n");
 	}
 
 	while(42) {
+		// printf("\ni: %d\n",i);
 
 		/* Delete first color from color set of first node 
 		and assign it to it */
-		node_array[i].color = copy_first(&node_array[i].color_set);
-		delete_first(&node_array[i].color_set);
+		for(int j = 0; j < num_of_nodes; j++) {
+			if(node_array[i].color_set[j] == true) {
+				node_array[i].color = j;
+				node_array[i].color_set[j] = false;
+				break;
+			}
+		}
 
+		// printf("\n");
 		// print_colors();
 		// print_sets(i);
 		
@@ -170,12 +202,7 @@ bool forward_checking(int i) {
 		if(i == num_of_nodes - 1) {
 
 			/* Free alocated memory of node sets */
-			// for(int j = i+1; j < num_of_nodes; j++) free(node_sets[j]);
-			// free(node_sets);
-			for(int j = i+1; j < num_of_nodes; j++) {
-				delete_list(&node_array[j].color_set);
-				delete_list(&node_sets[j]);
-			}
+			for(int j = i+1; j < num_of_nodes; j++) free(node_sets[j]);
 			free(node_sets);
 			return true;
 		}
@@ -184,59 +211,75 @@ bool forward_checking(int i) {
 		values */
 		delete_conflicting_colors(i);
 
+		/* Figuring out if some colorset of nodes from j to n is empty */
+		bool goback_flag = false;
+		goback_flag = is_some_colorset_empty(i);
+
 		/* If some colorset of nodes from j to n is empty, roll back */
-		if(is_some_colorset_empty(i)) {
+		if(goback_flag) {
 			for(int j = i + 1; j < num_of_nodes; j++) {
-				ColorList copy;
-				copy_list(&node_sets[j], &copy);
-				delete_list(&node_array[j].color_set);
-				node_array[j].color_set = copy;
+				/* The "i" instead of "num_of_nodes" is debatable */
+				/* Actually I think this should be optimized later */
+				for(int k = 0; k < i+1; k++) {
+					/* Change things back using goback arrays */
+					if(node_sets[j][k] == true) {
+						// printf("Putting back color %d to colorset of node %d\n",k,j);
+						node_array[j].color_set[k] = true;
+					}
+				}
 			}
 		}
 		else {
 
 			/* Recursive calling */
-			if(forward_checking(i + 1)) {
+			bool success = forward_checking(i + 1);
+			if(success) {
 				/* Free alocated memory of node sets */
-				// for(int j = i+1; j < num_of_nodes; j++) free(node_sets[j]);
-				// free(node_sets);
-				for(int j = i+1; j < num_of_nodes; j++) {
-					delete_list(&node_array[j].color_set);
-					delete_list(&node_sets[j]);
-				}
+				for(int j = i+1; j < num_of_nodes; j++) free(node_sets[j]);
 				free(node_sets);
-				return true;
+				return success;
 			}
 			else {
 				/* Rollback after comeback from recursive calling */
 				for(int j = i + 1; j < num_of_nodes; j++) {
-					ColorList copy;
-					copy_list(&node_sets[j], &copy);
-					delete_list(&node_array[j].color_set);
-					node_array[j].color_set = copy;
+					/* The "i" instead of "num_of_nodes" is debatable */
+					/* Actually I think this should be optimized later */
+					for(int k = 0; k < i+1; k++) {
+						/* Change things back using goback arrays */
+						if(node_sets[j][k] == true) {
+							// printf("Putting back color %d to colorset of node %d\n",k,j);
+							node_array[j].color_set[k] = true;
+						}
+					}
 				}
 			}
 		}
 
-		/* If i-th node's colorset is empty, declare fail */
-		if((node_array[i].color_set).first == NULL) {
-
+		/* Going through the i-th node's color set and finding out, 
+		if it's empty */
+		bool empty = true;
+		for(int j = 0; j < num_of_nodes; j++) {
+			if(node_array[i].color_set[j] == true) {
+				empty = false;
+			}
+		}
+		if(empty) {
+			/* I guess I should somehow make possible to nodes have clean
+			slate after not being succesfully assigned color, like shown in
+			presentation */
 			node_array[i].color = -1;
 
 			/* Free alocated memory of node sets */
-			// for(int j = i+1; j < num_of_nodes; j++) free(node_sets[j]);
-			// free(node_sets);
-			for(int j = i+1; j < num_of_nodes; j++) {
-				delete_list(&node_array[j].color_set);
-				delete_list(&node_sets[j]);
-			}
+			for(int j = i+1; j < num_of_nodes; j++) free(node_sets[j]);
 			free(node_sets);
 			return false;
 		}
 		else {
 			continue;
 		}
-	}	
+	}
+
+	
 }
 
 void fill_node(FILE* file, Node *node, int node_id) {
@@ -327,6 +370,12 @@ void create_graph(char* filename) {
     	fill_node(file, &node_array[i], i);
     }
 
+    /* Allocating memory for color sets of nodes */
+    for(int i = 0; i < num_of_nodes; i++) {
+    	// *(node_array[i].color_set)
+    	node_array[i].color_set = calloc(num_of_nodes, sizeof(bool));
+    }
+
     /* If graph matrix isn't symmetrical by diagonal or it contains
     self-loops, exit */
     check_matrix();
@@ -342,6 +391,20 @@ void create_graph(char* filename) {
 
 int main(int argc, char* argv[]) {
 
+	/* Trying list */
+	ColorList list;
+	list_init(&list);
+	insert_last(&list, 7);
+	insert_last(&list, 8);
+	insert_last(&list, 9);
+	make_first_active(&list);
+
+	printf("First: %d\n", copy_first(&list));
+
+	delete_first(&list);
+
+	printf("First: %d\n", copy_first(&list));
+
 	/* Going through list */
 	// while(42) {
 	// 	if(list.active->right_ptr != NULL) {
@@ -352,7 +415,7 @@ int main(int argc, char* argv[]) {
 	// 		return 0;
 	// }
 
-	// return 0;
+	return 0;
 
 	/* Get graph info from file and create structures representing 
 	this graph */
@@ -369,12 +432,8 @@ int main(int argc, char* argv[]) {
 	    round */
 	    for(int j = 0; j < num_of_nodes; j++) {
 
-	    	ColorList *colorlist = &node_array[j].color_set;
-
-	    	list_init(colorlist);
-
 	    	for(int k = 0; k < round + 1; k++) {
-	    		insert_last(colorlist, k);
+		    	node_array[j].color_set[k] = true;
 	    	}
 
 	    	/* Also need to erase numbers from round before */
@@ -383,21 +442,12 @@ int main(int argc, char* argv[]) {
 		if(forward_checking(0)) {
 			// printf("RESULT: %s\n", "SUCCESS");
 		    print_colors();
-			/* After every round colorsets of nodes must be deleted,
-			so they don't interact with next round */
-		    for(int j = 0; j < num_of_nodes; j++) {
-			    delete_list(&node_array[j].color_set);
-			}
 			break;
 		}
 		else {
 			// printf("RESULT: %s\n", "FAILURE");
 			// print_colors();
-			for(int j = 0; j < num_of_nodes; j++) {
-			    delete_list(&node_array[j].color_set);
-			}
 		}
-
 	}
 
     /* Stop measuring time */
@@ -406,6 +456,9 @@ int main(int argc, char* argv[]) {
 
     /* Free memory */
     free(graph_table);
+    for(int i = 0; i < num_of_nodes; i++) {
+    	free(node_array[i].color_set);
+    }
     free(node_array);
 
     /* Print measured time */
