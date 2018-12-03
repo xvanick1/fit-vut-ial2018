@@ -14,7 +14,8 @@ typedef enum {
 typedef struct {
 	int id; // id of node equals index in node_array
 	int color;
-	bool *color_set;
+	// bool *color_set;
+	int *color_set;
 } Node;
 
 /* Color list */
