@@ -200,7 +200,6 @@ bool forward_checking(int i) {
 		// if(node_array[0].color > 0) {
 		// 	// Free alocated memory of rollback array 
 		// 	free_rollback_array(i, rollback_array);
-
 		// 	return false;
 		// }
 
