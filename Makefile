@@ -14,4 +14,4 @@ clean:
 	rm -r main *.o
 
 test:
-	python3 testing.py -b 40
+	python3 testing.py -b 41

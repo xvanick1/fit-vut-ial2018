@@ -15,21 +15,20 @@ typedef struct {
 	int id; // id of node equals index in node_array
 	int color;
 	bool *color_set;
-	bool *goback_array;
 } Node;
 
 /* Color list */
-typedef struct color_elem {
-	int color;
-	struct color_elem *right_ptr;
-	struct color_elem *left_ptr;
-} ColorElement;
+// typedef struct color_elem {
+// 	int color;
+// 	struct color_elem *right_ptr;
+// 	struct color_elem *left_ptr;
+// } ColorElement;
 
-typedef struct {
-	ColorElement *first;
-	ColorElement *last;
-	ColorElement *active;
-} ColorList;
+// typedef struct {
+// 	ColorElement *first;
+// 	ColorElement *last;
+// 	ColorElement *active;
+// } ColorList;
 
 /* Node list */
 // typedef struct elem {
@@ -50,7 +49,7 @@ Node *node_array;
 
 void print_info();
 
-void print_coloring(int *min_colored_array, int min_chromatic_num, 
+void print_coloring(/*int *min_colored_array,*/ int min_chromatic_num, 
 	int mode);
 
 char* parse_arguments(int argc, char** argv);

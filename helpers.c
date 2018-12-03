@@ -19,7 +19,7 @@ void print_info() {
 
 /* Prints coloring of nodes and their neighbors. For better comprehension
 indexes of nodes, colors and chromatic number are raised by 1 */
-void print_coloring(int *min_colored_array, int min_chromatic_num, 
+void print_coloring(/*int *min_colored_array,*/ int min_chromatic_num, 
 	int mode) {
 
 	if(mode == NORMAL || mode == SMALLER) {
@@ -47,7 +47,8 @@ void print_coloring(int *min_colored_array, int min_chromatic_num,
 		for(int i = 0; i < num_of_nodes; i++) {
 			
 			/* Print node id and color */
-			printf("| %-18d| %-18d|", i + 1, min_colored_array[i] + 1);
+			// printf("| %-18d| %-18d|", i + 1, min_colored_array[i] + 1);
+			printf("| %-18d| %-18d|", i + 1, node_array[i].color + 1);
 
 			int max_chars_on_line = 18;
 
