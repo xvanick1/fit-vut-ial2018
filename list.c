@@ -311,9 +311,9 @@ bool find_color(ColorList *list, int color) {
 			/* Since list is sorted by color number and I only delete 
 			colors from beginning, they stay sorted, so if I encounter
 			bigger color, it's clear that smaller color isn't there */
-			// else if(copy_active(list) > color) {
-			// 	return false;
-			// }
+			else if(copy_active(list) > color) {
+				return false;
+			}
 			make_next_active(list);
 		}
 	}
