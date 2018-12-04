@@ -13,8 +13,7 @@ typedef enum {
 
 typedef struct {
 	int *color_set;
-	int size; // index of last color == size - 1
-	// good for allocating memory
+	int size; // Number of colors in colorset or size of array?
 } ColorSet;
 
 typedef struct {
