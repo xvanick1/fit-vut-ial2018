@@ -47,7 +47,6 @@ void print_coloring(/*int *min_colored_array,*/ int min_chromatic_num,
 		for(int i = 0; i < num_of_nodes; i++) {
 			
 			/* Print node id and color */
-			// printf("| %-18d| %-18d|", i + 1, min_colored_array[i] + 1);
 			printf("| %-18d| %-18d|", i + 1, node_array[i].color + 1);
 
 			int max_chars_on_line = 18;
