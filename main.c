@@ -70,40 +70,38 @@ DONE
 #include "helpers.h" // For global variables and structures
 
 void print_colors() {
-	// printf("Nodes : ");
-	// for(int i = 0; i < num_of_nodes; i++) {
-	// 	printf("%d ",i);
-	// }
-	// printf("\n");
-	// printf("Colors: ");
-	// for(int i = 0; i < num_of_nodes; i++) {
-	// 	int color = node_array[i].color;
-	// 	if(color == -1)
-	// 		printf("- ");
-	// 	else
-	// 		printf("%d ",node_array[i].color);
-	// }
-	// printf("\n");
-    int max_color = -1; 
-	for (int i = 0; i < num_of_nodes; i++) {
-		if(node_array[i].color > max_color) {
-			max_color = node_array[i].color;
-		}
+	printf("Nodes : ");
+	for(int i = 0; i < num_of_nodes; i++) {
+		printf("%d ",i);
 	}
-	// return max_color;
-	printf("%d\n",max_color + 1 );
+	printf("\n");
+	printf("Colors: ");
+	for(int i = 0; i < num_of_nodes; i++) {
+		int color = node_array[i].color;
+		if(color == -1)
+			printf("- ");
+		else
+			printf("%d ",node_array[i].color);
+	}
+	printf("\n");
+ //    int max_color = -1; 
+	// for (int i = 0; i < num_of_nodes; i++) {
+	// 	if(node_array[i].color > max_color) {
+	// 		max_color = node_array[i].color;
+	// 	}
+	// }
+	// // return max_color;
+	// printf("%d\n",max_color + 1 );
 }
 
 void print_sets(int i) {
 	printf("Node %d color: %d\n",i,node_array[i].color);
 	for(int j = 0; j < num_of_nodes; j++) {
-		printf("Node %d = {",j);
-		for(int k = 0; k < num_of_nodes; k++) {
-			if(node_array[j].color_set[k]) {
-				printf("%d ", k);
-			}
+		printf("Node %d = { ",j);
+		for(int k = 0; k < node_array[j].size; k++) {
+			printf("%d ",node_array[j].color_set[k] );
 		}
-		printf("}\n");
+		printf("}     ");
 		printf("Size: %d\n",node_array[j].size);
 
 	}
@@ -155,19 +153,21 @@ void delete_conflicting_colors(int i) {
 		/* Neighbor was found */
 		if(graph_table[node * num_of_nodes + i] == true) {
 
+			Node *neighbor = &node_array[node];
+
 			/* Check if there is conflict between color of i-th node and
 			colors of nodes with index i+1, and if so, drop that color 
 			from the set */
-			for(int color = 0; color < num_of_nodes; color++) { 
+			for(int color = 0; color < neighbor->size; color++) { 
 				
 				/* Need to check constrains only with i-th node */
 				int ith_color = node_array[i].color;
-				int neighbor_color = node_array[node].color_set[color];
+				int neighbor_color = neighbor->color_set[color];
 
 				if(neighbor_color == ith_color) {
 					// printf("Conflict between nodes %d and %d: color %d\n",k,j,l); 
-					node_array[node].color_set[color] = -1;
-					node_array[node].size = node_array[node].size - 1;
+					neighbor->color_set[color] = -1;
+					neighbor->size = neighbor->size - 1;
 				}
 			}
 		}
@@ -176,7 +176,7 @@ void delete_conflicting_colors(int i) {
 
 void pop_first_color_and_assign_it(int i) {
 	/* Iterate through array of colors */
-	for(int color = 0; color < num_of_nodes; color++) {
+	for(int color = 0; color < node_array[i].size; color++) {
 
 		/* Assign first color that isn't -1 */
 		if(node_array[i].color_set[color] != -1) {
@@ -203,7 +203,7 @@ void copy_colorsets_for_rollback(int i, ColorSet *rollback_array) {
 		
 		/* Iterate through their int arrays */
 		int index = 0;
-		for(int color = 0; color < num_of_nodes; color++) {
+		for(int color = 0; color < num_of_colors; color++) {
 
 			/* Copy only colors that are not -1 */
 			int color_copy = node_array[node].color_set[color];
@@ -215,6 +215,7 @@ void copy_colorsets_for_rollback(int i, ColorSet *rollback_array) {
 }
 
 void rollback_colorsets(int i, ColorSet *rollback_array) {
+	printf("ROLLING BACK\n");
 
 	/* Iterate through nodes */
 	for(int node = i + 1; node < num_of_nodes; node++) {
@@ -231,6 +232,7 @@ void rollback_colorsets(int i, ColorSet *rollback_array) {
 }
 
 void free_rollback_array(int i, ColorSet *rollback_array) {
+	printf("FREE ROLLBACK ARRAY AND GO UP\n");
 	for(int node = i+1; node < num_of_nodes; node++) {
 		free(rollback_array[node].color_set);
 	}
@@ -238,6 +240,7 @@ void free_rollback_array(int i, ColorSet *rollback_array) {
 }
 
 bool forward_checking(int i) {
+	printf("\nLEVEL %d of recursion\n",i);
 
 	/* Save colorsets of nodes from i+1 to n for use in case of rollback */
 	/* Pointer to array of arrays of bools */
@@ -247,14 +250,15 @@ bool forward_checking(int i) {
 	copy_colorsets_for_rollback(i, rollback_array);
 
 	while(42) {
+		printf("LOOP\n");
 
 		/* Delete first color from color set of first node 
 		and assign it to it */
 		pop_first_color_and_assign_it(i);
+		print_sets(i);
 
 		// printf("\n");
 		// print_colors();
-		print_sets(i);
 
 		/* If wanted coloring is found, end */
 		if(i == num_of_nodes - 1) {
@@ -277,6 +281,7 @@ bool forward_checking(int i) {
 
 		/* If some colorset of nodes from j to n is empty, roll back */
 		if(is_some_node_colorset_empty(i)) {
+			// printf("HEJ\n");
 			rollback_colorsets(i, rollback_array);
 		}
 		else {
@@ -400,14 +405,6 @@ void create_graph(char* filename) {
     	fill_node(file, &node_array[i], i);
     }
 
-    /* Allocating memory for color sets of nodes */
-    for(int i = 0; i < num_of_nodes; i++) {
-    	node_array[i].color_set = calloc(num_of_nodes, sizeof(*(node_array[i].color_set)));
-    	for(int j = 0; j < num_of_nodes; j++) {
-    		node_array[i].color_set[j] = -1;
-    	}
-    }
-
     /* If graph matrix isn't symmetrical by diagonal or it contains
     self-loops, exit */
     check_matrix();
@@ -434,10 +431,19 @@ int main(int argc, char* argv[]) {
     /* Apply coloring algorithm on nodes and print solution */
 	for(int round = 0; round < num_of_nodes; round++) {
 
+    	int num_of_colors = round + 1;
+
 	    /* I need to make colorsets filled only to the color of round */
 	    for(int node = 0; node < num_of_nodes; node++) {
 
-	    	int num_of_colors = round + 1;
+    	    /* Allocating memory for color sets of nodes */
+	    	node_array[node].color_set = calloc(num_of_colors, 
+	    		sizeof(*(node_array[node].color_set)));
+
+	    	/* Init all colors to -1 */
+	    	for(int j = 0; j < num_of_colors; j++) {
+	    		node_array[node].color_set[j] = -1;
+	    	}
 	    	
 	    	for(int color = 0; color < num_of_colors; color++) {
 		    	node_array[node].color_set[color] = color;
@@ -448,6 +454,7 @@ int main(int argc, char* argv[]) {
 	    	/* Also need to erase numbers from round before */
 	    	node_array[node].color = -1;
 		}
+		printf("\nROUND %d",round);
 		if(forward_checking(0)) {
 			// printf("RESULT: %s\n", "SUCCESS");
 			print_colors();
@@ -455,11 +462,17 @@ int main(int argc, char* argv[]) {
 			//     printf("%d", print_colors() + 1);
 			// else
 			//     print_coloring(print_colors(), MINIMAL);
+			for(int node = 0; node < num_of_colors; node++) {
+				free(node_array[node].color_set);
+			}
 			break;
 		}
 		else {
 			// printf("RESULT: %s\n", "FAILURE");
 			// print_colors();
+			for(int node = 0; node < num_of_colors; node++) {
+				free(node_array[node].color_set);
+			}
 		}
 	}
 

@@ -2,13 +2,13 @@ CC=gcc
 CFLAGS=-std=gnu99 -Wall -pedantic
 
 all: helpers.o main.o
-	$(CC) $(CFLAGS) -o main helpers.o main.o 
+	$(CC) $(CFLAGS) -o main helpers.o main.o -g
 
 main.o: main.c helpers.h 
-	$(CC) $(CFLAGS) -c main.c
+	$(CC) $(CFLAGS) -c main.c -g
 
 helpers.o: helpers.c helpers.h
-	$(CC) $(CFLAGS) -c helpers.c
+	$(CC) $(CFLAGS) -c helpers.c -g
 
 clean: 
 	rm -r main *.o
