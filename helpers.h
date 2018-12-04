@@ -12,10 +12,19 @@ typedef enum {
 } MODE;
 
 typedef struct {
+	int *color_set;
+	int size; // index of last color == size - 1
+	// good for allocating memory
+} ColorSet;
+
+typedef struct {
 	int id; // id of node equals index in node_array
 	int color;
 	// bool *color_set;
 	int *color_set;
+	int size; // index of last color == size - 1
+	// ColorSet color_set;
+	
 } Node;
 
 /* Color list */
