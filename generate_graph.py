@@ -44,29 +44,38 @@ def create_matrix(args, n, default_full):
 	if args.random:
 
 		# Create zeroed numpy 2D array
-		matrix = np.full((n, n), 0)
+		matrix = [[0 for x in range(n)] for y in range(n)] 
 
 		# Randomize connections only at and above main diagonal of matrix
-		m = 1
+		x = 1
 		for i in range(0, n):
-			for j in range(m, n):
+			for j in range(x, n):
 				matrix[i][j] = random.randint(0, 1)
-			m += 1
+			x += 1
 
 		'''
-		Make matrix symmetrical by main diagonal by 
-		transposing it and adding it to that
+		Make matrix symmetrical by main diagonal
 		'''
-		matrix = matrix + matrix.T
+		y = 1
+		for i in range(0, n):
+			for j in range(y, n):
+				matrix[j][i] = matrix[i][j]
+			y += 1
 
 	# Fully connected graph (without self-loops)
 	elif args.full or default_full:
-		matrix = np.full((n, n), 1)
-		np.fill_diagonal(matrix, 0)
+
+		# Fill matrix with ones
+		matrix = [[1 for x in range(n)] for y in range(n)]
+
+		# On main diagonal put zeroes
+		for i in range(0, n):
+			matrix[i][i] = 0
+
 
 	# Empty of connections
 	elif args.empty:
-		matrix = np.full((n, n), 0)
+		matrix = [[0 for x in range(n)] for y in range(n)]
 
 	return matrix
 
