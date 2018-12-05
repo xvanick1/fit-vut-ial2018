@@ -39,3 +39,20 @@ Náhodně generované:
 
 Skript na generování grafů
 ==========================
+- pokud vám nebudou stačit naše příklady grafů, přiložili jsme k 
+programu skript na generování grafů "generate_graph.py", pro rychlou
+nápovědu jej spusťte s přepínačem "-h"
+- skript lze spustit následovně:
+
+	python3 generate_graph.py -MOD -o VYSTUP -n POCET_UZLU
+	
+- MOD označuje mód tvoření grafu a je na výběr ze 3 možností
+  - plně spojený graf (-f) [VÝCHOZÍ MÓD]
+  - náhodně spojený graf (-r)
+  - graf bez hran (-e)
+- VYSTUP označuje jméno souboru, do kterého se graf vygeneruje,
+soubor může mít koncovky .txt, .in nebo žádnou [VÝCHOZÍ SOUBOR JE nodes.txt]
+- POCET_UZLU označuje počet uzlů v grafu
+
+
+
