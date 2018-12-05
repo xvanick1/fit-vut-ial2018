@@ -17,13 +17,13 @@ typedef struct {
 	bool *color_set;
 } Node;
 
-/* Heavily used data types */
+/* Heavily used data structures */
 bool *graph_table;
 Node *node_array;
 
 void print_info();
 
-void print_coloring(/*int *min_colored_array,*/ int min_chromatic_num, 
+void print_coloring(int min_chromatic_num, 
 	int mode);
 
 char* parse_arguments(int argc, char** argv);

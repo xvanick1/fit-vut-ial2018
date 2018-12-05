@@ -13,3 +13,22 @@ Jak program používat
   - pod počtem uzlů je pak graf reprezentovaný maticí sousednosti, kde 1 znamená hranu mezi uzly, 0 znamená absenci hrany, čísla jsou odděleny mezerami a řádky matice jsou odděleny znakem konce řádku
 4. Pro více informací o spuštění programu je možné zobrazit nápovědu pomocí příkazu "./main -h"
 5. Pro ještě více informací si prosím přečtěte naši dokumentaci v souboru "documentation.pdf"
+
+Příkladové grafy
+================
+1. 50 plně spojených
+2. 100 
+3. 150
+4. 200
+5. 250
+
+6. 50 s náhodně generovanými hranami
+...
+
+11. 1000 izolovaných
+
+12. některé z našich testovacích grafů
+... 
+
+Skript na generování grafů
+==========================

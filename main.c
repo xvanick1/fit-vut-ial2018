@@ -38,9 +38,13 @@ one paper - 2^n*n and 2.445^n
 TODO:
 - headers in each program file
 - create 5-10 good test graphs
+  - write them to readme
 - finish documentation
+- calculate exponential complexity and create graph about it
 - at last check if it runs on eva and with valgrind
 - include changed script for generating graphs to zip 
+- delete hidden git files from folder
+
 
 DONE
 - index nodes and colors from 0 not 1
@@ -63,7 +67,8 @@ DONE
 #include <time.h>
 #include <limits.h>
 
-#include "helpers.h" // For global variables and structures
+// For global variables, structures and helping functions
+#include "helpers.h"
 
 int get_chromatic_number() {
 
@@ -76,11 +81,11 @@ int get_chromatic_number() {
 	return max_color;
 }
 
-/* Delete from colorsets all colors that are in conflict with assigned 
-values */
+/* Delete from colorsets of nodes i+1 all colors that are in conflict 
+with assigned values */
 void delete_conflicting_colors(int i) {
 
-	for(int id = i + 1; id < num_of_nodes; id++) { // j is node id
+	for(int id = i + 1; id < num_of_nodes; id++) { 
 			
 		/* Neighbor was found */
 		if(graph_table[id * num_of_nodes + i] == true) {
@@ -96,14 +101,14 @@ void delete_conflicting_colors(int i) {
 }
 
 /* Figuring out if some colorset of nodes from j to n is empty */
-bool is_some_jth_colorset_empty(int i) {
+bool is_some_i_plus_one_colorset_empty(int i) {
 
-	for(int id = i + 1; id < num_of_nodes; id++) { // j is node id
+	for(int id = i + 1; id < num_of_nodes; id++) {
 		bool empty = true;
 		
 		/* Here I go through all colors in color set of node j
 		and check if some set is empty */
-		for(int color = 0; color < num_of_nodes; color++) { // k is color in color_set
+		for(int color = 0; color < num_of_nodes; color++) {
 			if(node_array[id].color_set[color] == true) {
 				empty = false;
 			}
@@ -196,7 +201,9 @@ bool forward_checking(int i) {
 			return true;
 		}
 
-		/* Don't assign to first node bigger color than 0 */
+		/* Don't assign to first node bigger color than 0. If it gets 
+		assigned, it means solution for that number of colors doesn't
+		exist */
 		if(node_array[0].color > 0) {
 			/* Free alocated memory of rollback array */
 			free_rollback_array(i, rollback_array);
@@ -208,7 +215,7 @@ bool forward_checking(int i) {
 		delete_conflicting_colors(i);
 
 		/* If some colorset of nodes from j to n is empty, roll back */
-		if(is_some_jth_colorset_empty(i)) {
+		if(is_some_i_plus_one_colorset_empty(i)) {
 			rollback_colorsets(i, rollback_array);
 		}
 		else {
