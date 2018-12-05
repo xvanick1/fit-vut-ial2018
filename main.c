@@ -8,6 +8,18 @@ Subject: IAL
 Number: 6
 Name: Obarveni grafu
 
+ZADANI:
+Obarvenim grafu rozumime prirazeni barev uzlum grafu, 
+pricemz zadne dva sousedni uzly nesmi byt obarveny stejne. 
+Minimalni pocet pouzitych barev se nazyva chromaticke cislo.
+Vytvorte program pro hledani minimalniho obarveni neorientovanych 
+grafu.
+Pokud existuje vice reseni, staci nalezt pouze jedno. Vysledky 
+prezentujte vhodnym zpusobem. Soucasti projektu bude nacitani 
+grafu ze souboru a vhodne testovaci grafy. 
+V dokumentaci uvedte teoretickou slozitost ulohy 
+a porovnejte ji s experimentalnimi vysledky. 
+
 AUTHORS:
 - Josef Adamek (xadame42)
 - Diana Barnova (xbarno00)
@@ -249,7 +261,7 @@ void fill_node(FILE* file, Node *node, int node_id) {
 				continue;
 		}
 		else if(c == '1') {
-			/* Copy connection to the table */
+			/* Copy connection to the matrix */
 			graph_matrix[node_id * num_of_nodes + column] = true;
 			column++;
 			continue;
