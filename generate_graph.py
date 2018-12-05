@@ -15,7 +15,6 @@ python3 generate_graph.py -MODE -o OUTPUT_FILE -n NUMBER_OF_NODES
 
 import argparse
 import random
-import numpy as np
 
 def arguments():
 
