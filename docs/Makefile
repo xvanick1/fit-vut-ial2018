@@ -1,5 +1,5 @@
 all:	
-	pdflatex dokumentace.tex
-	pdflatex dokumentace.tex
+	pdflatex dokumentacia.tex
+	pdflatex dokumentacia.tex
 	
-	rm -r dokumentace.aux dokumentace.log dokumentace.toc
+	rm -r dokumentacia.aux dokumentacia.log dokumentacia.toc

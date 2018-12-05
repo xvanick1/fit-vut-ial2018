@@ -1,10 +1,12 @@
-/* 
+/********************************************************************
 
 FILE NAME: 
-color.c
+main.c
 
 PROJECT IDENTIFICATION: 
-"6. Obarveni grafu" - substitute project from IAL course
+Subject: IAL
+Number: 6
+Name: Obarveni grafu
 
 AUTHORS:
 - Josef Adamek (xadame42)
@@ -14,50 +16,17 @@ AUTHORS:
 
 BRIEF FILE DESCRIPTION:
 Main part of coloring program, that loads graph from file, applies 
-backtracking method with some specific changes on that graph, finds
-coloring of graph with minimal chromatic number and prints solution
+forward checking algorithm, finds minimal coloring of graph (chromatic
+number) with minimal chromatic number and prints nodes with colors
+assigned to them
 
 CREATED:
 27.9.2018
 
 LAST CHANGE:
-04.11.2018
+05.12.2018
 
-______________________________________________________________
-
-NOTES:
-- in this implementation self-loops (node connected to itself) 
-and multiple edges between nodes are NOT allowed
-- not gonna use atexit() since apparently on moderns systems memory
-will get taken care of automatically after using exit()
-- we don't have to analyze time complexity of arrays, loops or things 
-like that, since that should be included to complexity of backtracking - m^n.
-Although we could compare our program with complexity from wikipedia and that
-one paper - 2^n*n and 2.445^n
-
-TODO:
-- headers in each program file
-- create 5-10 good test graphs
-  - write them to readme
-- finish documentation
-- calculate exponential complexity and create graph about it
-- at last check if it runs on eva and with valgrind
-- include changed script for generating graphs to zip 
-- delete hidden git files from folder
-
-
-DONE
-- index nodes and colors from 0 not 1
-- fix solution print
-- on eva -b (brief) argument is wrongly accepted
-- make 2D node matrix into 1D for optimization 
-- diff the two errors: file opening failed VS file not found
-- num_of_nodes shouldn't exceed INT_MAX
-- error handling
-- create README
-- first node doesn't have to go through all colors
-
-*/
+********************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -67,9 +36,11 @@ DONE
 #include <time.h>
 #include <limits.h>
 
-// For global variables, structures and helping functions
+/* For global variables, structures and helping functions */
 #include "helpers.h"
 
+/* Goes through all colors assigned to nodes and finds 
+chromatic number of graph */
 int get_chromatic_number() {
 
     int max_color = -1; 
@@ -88,7 +59,7 @@ void delete_conflicting_colors(int i) {
 	for(int id = i + 1; id < num_of_nodes; id++) { 
 			
 		/* Neighbor was found */
-		if(graph_table[id * num_of_nodes + i] == true) {
+		if(graph_matrix[id * num_of_nodes + i] == true) {
 
 			/* Check if there is conflict between nodes colors,
 			and if so, drop that color from the set */
@@ -132,6 +103,8 @@ bool is_ith_node_colorset_empty(int i) {
 	return empty;
 }
 
+/* Give nodes back colors from point when they first accessed this
+level of recursion of algorithm */
 void rollback_colorsets(int i, bool **rollback_array) {
 	for(int id = i + 1; id < num_of_nodes; id++) {
 
@@ -146,6 +119,8 @@ void rollback_colorsets(int i, bool **rollback_array) {
 	}
 }
 
+/* When going back from recursive calling, memory allocated for 
+rollback array needs to be freed */ 
 void free_rollback_array(int i, bool **rollback_array) {
 	for(int id = i+1; id < num_of_nodes; id++) {
 		free(rollback_array[id]);
@@ -168,6 +143,8 @@ void copy_colorsets_for_rollback(int i, bool **rollback_array) {
 	}
 }
 
+/* Function will delete color from colorset of node and will assign
+it to that node */
 void pop_first_color_and_assign_it(int i) {
 	for(int color = 0; color < num_of_nodes; color++) {
 		if(node_array[i].color_set[color] == true) {
@@ -178,6 +155,7 @@ void pop_first_color_and_assign_it(int i) {
 	}
 }
 
+/* Algorithm for finding coloring of graph using forward checking */
 bool forward_checking(int i) {
 
 	/* Save colorsets of nodes from i+1 to n for use in case of rollback */
@@ -249,6 +227,8 @@ bool forward_checking(int i) {
 	}
 }
 
+/* Function will initialize node with values and moves its connestions 
+to neighbors from file to graph represented also by matrix of connections */
 void fill_node(FILE* file, Node *node, int node_id) {
 
 	/* Getting node id and initializing it */
@@ -270,12 +250,12 @@ void fill_node(FILE* file, Node *node, int node_id) {
 		}
 		else if(c == '1') {
 			/* Copy connection to the table */
-			graph_table[node_id * num_of_nodes + column] = true;
+			graph_matrix[node_id * num_of_nodes + column] = true;
 			column++;
 			continue;
 		}
 		else if(c == '0') {
-			graph_table[node_id * num_of_nodes + column] = false;
+			graph_matrix[node_id * num_of_nodes + column] = false;
 			column++;
 			continue;
 		}
@@ -326,8 +306,8 @@ void create_graph(char* filename) {
 	}
 
     /* Empty boolean array representing matrix representing graph */
-    graph_table = calloc(num_of_nodes * num_of_nodes, sizeof(*graph_table));
-	if(graph_table == NULL) {
+    graph_matrix = calloc(num_of_nodes * num_of_nodes, sizeof(*graph_matrix));
+	if(graph_matrix == NULL) {
 		perror("ERROR: Memory allocation failed");
 		exit(EXIT_FAILURE);
 	}
@@ -353,7 +333,10 @@ void create_graph(char* filename) {
     return;
 }
 
-
+/* Main function parses arguments, creates structures representing 
+undirected graph, fills them with data gotten from file,
+runs algorithm for finding solution with chromatic number of this graph
+and then it prints solution */
 int main(int argc, char* argv[]) {
 
 	/* Get graph info from file and create structures representing 
@@ -393,7 +376,7 @@ int main(int argc, char* argv[]) {
 	double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
     /* Free memory */
-    free(graph_table);
+    free(graph_matrix);
     for(int id = 0; id < num_of_nodes; id++) {
     	free(node_array[id].color_set);
     }

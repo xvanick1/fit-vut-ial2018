@@ -1,6 +1,30 @@
-/*
-In this file there are helper functions
-*/
+/********************************************************************
+
+FILE NAME: 
+helpers.c
+
+PROJECT IDENTIFICATION: 
+Subject: IAL
+Number: 6
+Name: Obarveni grafu
+
+AUTHORS:
+- Josef Adamek (xadame42)
+- Diana Barnova (xbarno00)
+- Jozef Vanicky (xvanic09)
+- Filip Weigel (xweige01)
+
+BRIEF FILE DESCRIPTION:
+This file contains helping functions, that are not really part of
+algorithm for finding chromatic number of graph
+
+CREATED:
+27.9.2018
+
+LAST CHANGE:
+05.12.2018
+
+********************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,7 +43,7 @@ void print_info() {
 
 /* Prints coloring of nodes and their neighbors. For better comprehension
 indexes of nodes, colors and chromatic number are raised by 1 */
-void print_coloring(/*int *min_colored_array,*/ int min_chromatic_num, 
+void print_coloring(int min_chromatic_num, 
 	int mode) {
 
 	if(mode == NORMAL || mode == SMALLER) {
@@ -56,7 +80,7 @@ void print_coloring(/*int *min_colored_array,*/ int min_chromatic_num,
 
 			for (int j = 0; j < num_of_nodes; j++)
 			{
-				if(graph_table[i * num_of_nodes + j] == true) {
+				if(graph_matrix[i * num_of_nodes + j] == true) {
 
 					/* Get char lenght of neighbor */
 					sprintf(neighbor, " %d", j + 1);
@@ -83,7 +107,7 @@ void print_coloring(/*int *min_colored_array,*/ int min_chromatic_num,
 			printf("\n+———————————————————+———————————————————+———————————————————+\n");
 		}
 
-		printf("\nMINIMAL CHROMATIC NUMBER: %d\n", min_chromatic_num + 1);
+		printf("\nCHROMATIC NUMBER: %d\n", min_chromatic_num + 1);
 	}
 }
 
@@ -102,9 +126,9 @@ char* parse_arguments(int argc, char** argv) {
 			"\t\tfile flag followed by name of file with graph,\n"
 			"\t\tallowed file extensions are .txt, .in or none\n"
 			"\n\t-b\n"
-			"\t\toptional flag that turns on brief node,\n"
-			"\t\tso that program prints only minimal chromatic\n"
-			"\t\tvalue of graph (used for testing with -f flag)\n"
+			"\t\toptional flag that turns on brief node, so that\n"
+			"\t\tprogram prints only chromatic number of graph\n"
+			"\t\t(used for testing)\n"
 			"\n\t-h\n"
 			"\t\tprint this message and exit\n"
 			"\n";
@@ -198,14 +222,16 @@ void check_matrix() {
 	int diagonal = 0;
 	for (int i = 0; i < num_of_nodes; i++)
 	{
-		if(graph_table[i * num_of_nodes + diagonal] == 1) {
+		if(graph_matrix[i * num_of_nodes + diagonal] == 1) {
 			fprintf(stderr, "ERROR: Self-loops are not allowed\n");
 			exit(EXIT_FAILURE);
 		}
 		for (int j = diagonal; j < num_of_nodes; j++)
-			if(graph_table[i * num_of_nodes + j] != 
-				graph_table[j * num_of_nodes + i]) 
+			if(graph_matrix[i * num_of_nodes + j] != 
+				graph_matrix[j * num_of_nodes + i]) 
 			{
+				printf("matrix[%d][%d]: %d\n",i,j,graph_matrix[i * num_of_nodes + j]);
+				printf("matrix[%d][%d]: %d\n",j,i,graph_matrix[j * num_of_nodes + i]);
 				fprintf(stderr, "ERROR: Input graph is not undirected\n");
 				exit(EXIT_FAILURE);
 			}

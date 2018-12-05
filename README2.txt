@@ -5,9 +5,9 @@ tedy pro naleznutí minimálního počtu barev, kterým lze graf obarvit tak, ab
 
 Jak program používat
 ====================
-1. Po rozbalení archivu je třeba použít příkaz make pro kompilaci
+1. Po rozbalení archivu je třeba použít příkaz "make" pro kompilaci
 2. Pro spuštění programu napište do příkazového řádku "./main -f FILENAME"
-  - FILENAME je zde textový soubor s uzly, několik příkladů je ve složce "examples"
+  - FILENAME je zde textový soubor s uzly, několik příkladů k vyzkoušení je ve složce "examples"
 3. Formát souborů s uzly je následovný:
   - na prvním řádku se nachází počet uzlů v grafu
   - pod počtem uzlů je pak graf reprezentovaný maticí sousednosti, kde 1 znamená hranu mezi uzly, 0 znamená absenci hrany, čísla jsou odděleny mezerami a řádky matice jsou odděleny znakem konce řádku
@@ -16,19 +16,26 @@ Jak program používat
 
 Příkladové grafy
 ================
-1. 50 plně spojených
-2. 100 
-3. 150
-4. 200
-5. 250
+Některé z našich testovacích grafů:
+1. Malý vůz
+2. Krychle
+3. Žirafa
+4. Graf s 10 uzly
+5. Graf se 50 uzly bez spojení
 
-6. 50 s náhodně generovanými hranami
-...
+Plně spojené:
+6. 20 uzlů
+7. 40 uzlů
+8. 60 uzlů
+9. 80 uzlů
+10. 100 uzlů
 
-11. 1000 izolovaných
-
-12. některé z našich testovacích grafů
-... 
+Náhodně generované:
+11. 10 uzlů
+12. 20 uzlů
+13. 30 uzlů
+14. 35 uzlů
+15. 40 uzlů (může už trvat 1-2 minuty)
 
 Skript na generování grafů
 ==========================
