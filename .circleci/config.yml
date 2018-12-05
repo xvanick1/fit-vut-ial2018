@@ -1,0 +1,15 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.7-stretch-node-browsers-legacy
+    steps:
+      - checkout
+      - run:
+          name: Compile
+          command: make
+      - run:
+          name: Tests
+          command: python3 testing.py
+
+
