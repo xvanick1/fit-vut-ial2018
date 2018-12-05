@@ -111,8 +111,8 @@ Komunikácia v týme prebiehala prostredníctvom služby Messenger ale aj osobne
 \textbf{Spúštanie:} ./main -f FILENAME [-h] [-b], kde
 \begin{itemize}
     \item -f FILENAME je názov súboru, ktorý obsahuje maticu grafu
-    \item -b je volitelný parameter, ktorý má na starosti...
-    \item -h je volitelný parameter, ktorý má na starosti vytlačiť spravu pre používanie na stdout
+    \item -b je volitelný parameter, \textcolor{red}{EDIT: } který spustí "brief mode" programu, takže program tiskne na standartní výstup pouze chromatické číslo zpracovaného grafu
+    \item -h je volitelný parameter, ktorý má na starosti vytlačiť spravu pre používanie na standartní výstup
 \end{itemize}
 
 \section{Testování projektu}
@@ -120,8 +120,16 @@ Projekt sme najskôr testovani na menšich testovacích grafoch, ktoré sme vytv
 
 \section{Implementácia}
 [\textcolor{red}{TRANSLATE: }Všechno pod tímto přeložit]
-\subsection{Struktury}
+
 \subsection{Algoritmus}
+Jako první algoritmus jsme použili backtracking 
+
+\subsection{Struktury}
+Dvě primární struktury nabízející se pro reprezentaci neorientovaného grafu v programu jsou seznam sousedů a matice sousednosti. My jsme zvolili matici sousednosti a to jak pro formát načítání grafu do programu, tak i pro následnou práci s tímto grafem.
+
+Pro reprezentaci samotného uzlu jsme si vytvořili strukturu "Node", která zahrnuje id uzlu, jeho přidělenou barvu a množinu
+
+
 \subsection{Analýza složitosti algoritmu}
 
 \section{Záver}
