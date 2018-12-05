@@ -278,7 +278,6 @@ void create_graph(char* filename) {
 	FILE *file;
     file = fopen(filename,"r");
     if(file == NULL) {
-        /* perror() will show message based on set errno */
         perror("ERROR: File opening failed");
         exit(EXIT_FAILURE);
     }
@@ -364,7 +363,7 @@ int main(int argc, char* argv[]) {
 		if(forward_checking(0)) {
 			int min_chrom_num = get_chromatic_number(); // starting at 0
 		    if(brief_flag)
-			    printf("%d", min_chrom_num + 1);
+			    printf("%d\n", min_chrom_num + 1);
 			else
 			    print_coloring(min_chrom_num, MINIMAL);
 			break;
