@@ -2,7 +2,7 @@
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/c8adbc05e0bf4b8a886bbe070ca91a21)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Keei-SK/iis&amp;utm_campaign=Badge_Grade)
 
-[![CircleCI](https://circleci.com/gh/Keei-SK/ial-vol2/tree/master.svg?style=svg)](https://circleci.com/gh/Keei-SK/ial-vol2/tree/master)
+[![CircleCI](https://circleci.com/gh/Keei-SK/ial-vol2.svg?style=svg)](https://circleci.com/gh/Keei-SK/ial-vol2)
 
 ### DESCRIPTION
 Obarvením grafu rozumíme přiřazení barev uzlům grafu, přičemž žádné dva sousední uzly nesmí být obarveny stejně. Minimální počet použitých barev se nazývá chromatické číslo. 
