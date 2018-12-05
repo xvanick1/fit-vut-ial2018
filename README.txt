@@ -1,7 +1,7 @@
 Něco o programu
 ===============
 Tento program slouží pro hledání minimálního chromatického čísla grafu,
-tedy pro naleznutí minimálního počtu barev, kterým lze graf obarvit tak, aby uzly spojené hranou neměly stejnou barvu.
+tedy pro nalezení minimálního počtu barev, kterým lze graf obarvit tak, aby uzly spojené hranou neměly stejnou barvu.
 
 Jak program používat
 ====================
@@ -21,7 +21,7 @@ Některé z našich testovacích grafů:
 2. Krychle
 3. Žirafa
 4. Graf s 10 uzly
-5. Graf se 50 uzly bez spojení
+5. Graf s 50 uzly bez spojení
 
 Plně spojené:
 6. 20 uzlů
