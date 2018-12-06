@@ -1,8 +1,0 @@
-main
-*.o
-.DS_Store
-dokumentace.log
-dokumentace.toc
-dokumentace.aux
-
-nodes
