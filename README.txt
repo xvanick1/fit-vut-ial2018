@@ -1,5 +1,3 @@
-[Google docs - priprava na obhajobu](https://docs.google.com/document/d/1tTo44nXXxEDO7JsKzL3hzcoaxhGyKCNZOSJlsRAkhl0/edit?usp=sharing)
-
 Něco o programu
 ===============
 Tento program slouží pro hledání minimálního chromatického čísla grafu,
