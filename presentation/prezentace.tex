@@ -51,7 +51,7 @@ Weigel Filip & xweige01 \\
 	\item[$\bullet$] problém: naleznutí chromatického čísla grafu
 	\item[$\bullet$] použití neorientovaných grafů bez smyček a více hran mezi uzly
 	\end{itemize}
-	\includegraphics[scale=0.58]{img/matrix_n_graf.png}
+	\includegraphics[scale=0.4]{img/colored.png}
 \end{frame}
 
 \begin{frame}\frametitle{Algoritmus}
@@ -61,6 +61,8 @@ Weigel Filip & xweige01 \\
     \item[$\bullet$] navracení implementováno pomocí zásobníku
     \item[$\bullet$] bez vylepšení pomalá metoda pro optimální barvení grafů...
 	\end{itemize}
+    \includegraphics[scale=0.3]{img/australia.png}
+    \includegraphics[scale=0.3]{img/backtracking.png}
 \end{frame}
 
 \begin{frame}\frametitle{Algoritmus}
@@ -71,19 +73,22 @@ Weigel Filip & xweige01 \\
     \item[$\bullet$] použití množin legálních barev uzlů
     \item[$\bullet$] implementována pomocí rekurze
 	\end{itemize}
+    \includegraphics[scale=0.3]{img/australia.png}
+    \includegraphics[scale=0.3]{img/fc_tree.png}
+    \includegraphics[scale=0.6]{img/fc_sets.png}
 \end{frame}
 
 \begin{frame}\frametitle{Struktury}
     \begin{itemize}
-	\item[$\bullet$] matice sousednosti
-	\item[$\bullet$] struktura uzlu
-	\item[$\bullet$] pole uzlů
+	\item[$\bullet$] zvolili jsme matici sousednosti, protože naše úloha řeší i hustě spojené grafy
+	\item[$\bullet$] množiny legálních barev implementovány pomocí polí typu bool
 	\end{itemize}
+    \includegraphics[scale=0.58]{img/structures.png}
 \end{frame}
 
 \begin{frame}\frametitle{Časová složitost}
 	\begin{itemize}
-	\item[$\bullet$] hledání chromatického čísla je \emph{NP-úplný problém}
+	\item[$\bullet$] hledání chromatického čísla grafu je \emph{NP-úplný problém}
     \item[$\bullet$] časová složitost metody forward checking: \emph{$O(m^n)$}
     \end{itemize}
 \end{frame}
