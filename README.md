@@ -4,6 +4,8 @@
 
 [![CircleCI](https://circleci.com/gh/Keei-SK/ial-vol2.svg?style=svg)](https://circleci.com/gh/Keei-SK/ial-vol2)
 
+[Google docs - priprava na obhajobu](https://docs.google.com/document/d/1tTo44nXXxEDO7JsKzL3hzcoaxhGyKCNZOSJlsRAkhl0/edit?usp=sharing)
+
 ### DESCRIPTION
 Obarvením grafu rozumíme přiřazení barev uzlům grafu, přičemž žádné dva sousední uzly nesmí být obarveny stejně. Minimální počet použitých barev se nazývá chromatické číslo. 
 
