@@ -1,39 +1,38 @@
 
 ÚVOD
+Dobrý večer, dnes bych vám rád prezentoval zpracování náhradního projektu IAL se zadáním č. 6 - obarvení grafu.
 
-TEORIE (1m)
-Zadáním našeho projektu bylo vytvořit program na hledání optimálního obarvení grafů, nebo-li hledání chromatického čísla grafu. Tím se rozumí obarvit v grafu všechny uzly tak, aby se v grafu nevyskytovaly žádné dva uzly, které jsou spojené hranou a jsou obarveny stejně. V kontextu tohoto problému pracujeme pouze s neorientovanými grafy, které nemají smyčky (self-loops) a ani nejsou spojené více hranami.
+TEORIE
+Zadáním našeho projektu bylo vytvořit program pro minimální obarvení neorientovaného grafu. Tím se rozumí obarvit v grafu všechny uzly tak, aby se v něm nevyskytovaly žádné dva uzly, které jsou spojené hranou a zároveň mají stejnou barvu. V kontextu tohoto problému pracujeme pouze s neorientovanými grafy, které nemají smyčky a uzly v nich nejsou spojené vícero hranami.
 
 Součástí tohoto programu je načítání grafů ze souboru. Pro náš formát grafů v souboru jsme si vybrali matici sousednosti a dále ji využíváme i k reprezentaci hran mezi uzly v programu.
 
 IMPLEMENTACE
 	
-	ALGORITMUS (2m)
-	Jako první metodu pro obarvování grafu jsme použili metodu prohledávání stavového prostoru "backtracking" (slepé prohledávání se zpětným navracením), jelikož pro náš typ problému (CSP - problém s omezujícími podmínkami) je tato metoda úplná i optimální. V tomto algoritmu jsme rekurzi simulovali pomocí zásobníku. Později jsme však zjistili, že je tato metoda pomalá i s našimi vylepšeními. 
+	ALGORITMUS
+	Jako první metodu pro obarvování grafu jsme použili metodu prohledávání stavového prostoru "backtracking" (slepé prohledávání se zpětným navracením), jelikož pro náš typ problému (problém s omezujícími podmínkami) je tato metoda úplná i optimální. V tomto algoritmu jsme rekurzi simulovali pomocí zásobníku. Později jsme však zjistili, že je tato metoda pomalá i s našimi pokusy o zrychlení. 
 
-	Proto jsme jako druhou metodu použili "forward checking" (kontrola dopředu), která se dá chápat jako vylepšení metody backtracking, protože forward checking se jako metoda dívá dopředu a je schopná rychleji odhalit kombinace barev, které nevedou k řešení problému. Metoda je tak schopná prořezávat stavový strom a není proto potřeba používat tolik zpětného navracení. Tuto metodu jsme také konkrétně implementovali pomocí rekurze.
+	Proto jsme jako druhou metodu použili "forward checking" (kontrola dopředu), která se dá chápat jako vylepšení metody backtracking, protože forward checking se jako metoda dívá dopředu a je schopná rychleji odhalit kombinace barev, které nevedou k řešení problému. Metoda je tak schopná prořezávat stavový strom a není proto potřeba používat tolik zpětného navracení. Tuto metodu jsme implementovali pomocí rekurze.
 
-	STRUKTURY (1m)
-	Dvě primární struktury nabízející se pro reprezentaci neorientovaného grafu v programu jsou seznam sousedů a matice sousednosti. My jsme zvolili matici sousednosti a to jak pro formát načítání grafu do programu, tak i pro následnou práci s tímto grafem. V programu je matice sousednosti implementována jako jediné pole pro rychlejší přístup do ní.
+	STRUKTURY
+	Pro reprezentaci hran v grafu se nám nabízely 2 primární možnosti: seznam sousedů uzlu a matice sousednosti. Vybrali jsme matici sousednosti, protože náš program pracuje i s hustě spojenými grafy, u kterých je použití matice sousednosti prostorově výhodnější.
 
-	Pro reprezentaci samotného uzlu jsme si vytvořili strukturu "Node", která zahrnuje id uzlu, jeho přidělenou barvu a množinu legálních barev, která je důležitá pro metodu forward checking. Tyto množiny barev jednotlivých uzlů jsme implementovali pomocí polí typu bool, ve kterých index představovuje barvu a hodnota True nebo False značí, jestli je tato barva pro tento uzel legální. Takto reprezentované uzly jsou poté seřazeny v poli typu Node, přičemž jejich index a id jsou stejné, aby bylo možné k nim rychle přistupovat.
+	Samotné uzly grafu jsou seřazeny v poli typu Node. Struktura "Node" reprezentuje samotný uzel a zahrnuje jeho id, přidělenou barvu a množinu legálních barev, která je důležitá pro metodu forward checking. Tato množina je implementována jako pole typu bool, přičemž index pole představuje barvu a hodnota True nebo False značí, jestli je tato barva pro uzel legální.
 
-	ČASOVÁ SLOŽITOST (1m)
-	Problém minimálního obarvení grafu (anglicku k-coloring) je takzvaný "NP-complete problem", což ve výsledku znamená, že hledání optimálního řešení tohoto problému má exponenciální složitost.
+	ČASOVÁ SLOŽITOST
+	Problém minimálního obarvení grafu je takzvaný NP úplný problém, což ve výsledku znamená, že hledání optimálního řešení tohoto problému má exponenciální složitost.
 
-	Metoda forward checking má časovou složitost O(m^n), přičemž "n" v kontextu problému hledání chromatického čísla znamená počet uzlů v grafu a "m" je počet barev. A dále jelikož při hledání chromatického čísla počet barev může být stejný jako počet uzlů, časová složitost je vlastně O(n^n).
+	Metoda forward checking má prostorovou složitost O(n) a časovou složitost O(m^n), přičemž "n" v kontextu našeho problému znamená počet uzlů v grafu a "m" je počet barev. 
 
-PRÁCE V TÝMU (1m)
-	
-	SCHŮZE, KOMUNIKACE, GITHUB
-	Pro práci na projektu jsme se v průběhu semestru skoro pravidelně scházeli. Komunikovali jsme buď osobně nebo pomocí zpráv na Facebooku.
-	K verzování našeho programu jsme použili služby Git a GitHub.
+	Pomocí programovacích technik, jako jsou dynamické programování a inkluze-exkluze, je možné časovou složitost problému snížit až na O*(2^n) [při zanedbání složitostí menších než exp.], avšak za cenu toho, že prostorová složitost pak je také exponenciální.
 
-	TESTOVÁNÍ
-	V počáteční fázi vývoje jsme si vytvořili 40 testů, každý člen 10 grafů, které jsme si manuálně obarvili a určili tak jejich chromatické číslo. Tyto testy nám potom pomáhaly při změnách v algoritmu a pracovali jsme tak v duchu Test-Driven Development.
+PRÁCE V TÝMU
+	Pro práci na projektu jsme se v průběhu semestru téměř pravidelně scházeli. Komunikovali jsme buď osobně nebo pomocí zpráv na Facebooku.
+	K verzování našeho programu jsme použili služby Git na platformě GitHub.
+
+	V počáteční fázi vývoje jsme si vytvořili 40 testovacích grafů, každý člen 10, které jsme si manuálně obarvili a určili tak jejich chromatické číslo. Tyto testy nám potom pomáhaly při změnách v algoritmu a pracovali jsme tak v duchu programování řízeného testy (TDD).
 
 ZÁVĚR
-
-Přestože jsme se snažili vytvořit co nejrychlejší program pro hledání optimálního řešení pro hledání chromatického čísla, jsme si vědomi dalších metod, které by program dále zrychlily. Pokusili jsme se například vylepšit metodu forward checking různými heuristikami, ale jelikož už se blížilo datum odevzdání, tak jsme to nestihli a odevzdali projekt bez nich.
+Přestože jsme se snažili vytvořit co nejrychlejší program, jsme si vědomi dalších metod, které by jej dále zrychlily. Pokusili jsme se například vylepšit metodu forward checking různými heuristikami, ale jelikož už se blížilo datum odevzdání, nestihli jsme je už do finálního programu zasadit.
 
 

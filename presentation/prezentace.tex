@@ -57,7 +57,7 @@ Weigel Filip & xweige01 \\
 \begin{frame}\frametitle{Algoritmus}
     \emph{Slepé prohledávání se zpětným navracením (backtracking):}
     \begin{itemize}
-    \item[$\bullet$] pro CSP (problémy s omezujícími podmínkami) je to metoda \emph{úplná i optimální}
+    \item[$\bullet$] pro problémy s omezujícími podmínkami (CSP) je to metoda \emph{úplná i optimální}
     \item[$\bullet$] navracení implementováno pomocí zásobníku
     \item[$\bullet$] bez vylepšení pomalá metoda pro optimální barvení grafů...
 	\end{itemize}
@@ -69,7 +69,7 @@ Weigel Filip & xweige01 \\
     \emph{Kontrola dopředu (forward checking):}
     \begin{itemize}
     \item[$\bullet$] v podstatě rozšíření metody backtracking
-    \item[$\bullet$] metoda je schopná dříve odhalit "větve" kombinací barev, které nevedou ke správnému řešení
+    \item[$\bullet$] metoda je schopná dříve odhalit větve kombinací barev, které nevedou ke správnému řešení
     \item[$\bullet$] použití množin legálních barev uzlů
     \item[$\bullet$] implementována pomocí rekurze
 	\end{itemize}
@@ -89,10 +89,17 @@ Weigel Filip & xweige01 \\
 \begin{frame}\frametitle{Časová složitost}
 	\begin{itemize}
 	\item[$\bullet$] hledání chromatického čísla grafu je \emph{NP-úplný problém}
-    \item[$\bullet$] časová složitost metody forward checking: \emph{$O(m^n)$}
+    \item[$\bullet$] časová složitost metody forward checking je \emph{$O(m^n)$} a prostorová je \emph{$O(n)$}
+    \item[$\bullet$] časovou složitost tohoto problému je možné snížit až na \emph{$O^{*}(2^n)$}, avšak za cenu exponenciální prostorové složitosti
     \end{itemize}
-    \includegraphics[scale=0.3]{img/complex1.png}
-    \includegraphics[scale=0.2]{img/complex2.png}
+    \begin{columns}
+    \begin{column}{0.5\textwidth}
+    \includegraphics[scale=0.4]{img/complex1.png}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+    \includegraphics[scale=0.19]{img/complex2.png}
+    \end{column}
+    \end{columns}
 \end{frame}
 
 \begin{frame}\frametitle{Porovnání rychlosti verzí programu}
@@ -115,12 +122,27 @@ Weigel Filip & xweige01 \\
 
 \begin{frame}\frametitle{Práce v týmu}
     \begin{itemize}
-	\item[$\bullet$] pravidelné schůzky, komunikace přes Facebook
-	\item[$\bullet$] verzování programu pomocí nástrojů Git a GitHub
-	\item[$\bullet$] testování v duchu metody Test-Driven Development
+    	\item[$\bullet$] pravidelné schůzky, komunikace přes Facebook
+    	\item[$\bullet$] verzování programu pomocí nástrojů Git a GitHub
+    	\item[$\bullet$] testování v duchu metody programování řízeného testy (TDD)
 	\end{itemize}
 \end{frame}
 
+\begin{frame}\frametitle{Závěr}
+    \begin{itemize}
+        \item[$\bullet$] metodu forward checking je možné dále zrychlit pomocí heuristik (most constrained variable, most constraining variable...)
+    \end{itemize}
+\end{frame}
+
 \bluepage{Děkujeme za pozornost}
+
+\begin{frame}\frametitle{Zdroje}
+    \begin{itemize}
+        \item[$\bullet$] Opora a prezentace předmětu IAL
+        \item[$\bullet$] Materiály k předmětu IZU
+        \item[$\bullet$] Artificial Intelligence: A Modern Approach (3rd Edition), Peter Norvig, Stuart J. Russell
+        \item[$\bullet$] Exponential time algorithms for graph coloring, Uriel Feige, Lecture notes, 2011
+    \end{itemize}
+\end{frame}
 
 \end{document}
