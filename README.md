@@ -2,8 +2,6 @@
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/c8adbc05e0bf4b8a886bbe070ca91a21)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Keei-SK/iis&amp;utm_campaign=Badge_Grade)
 
-[![CircleCI](https://circleci.com/gh/Keei-SK/ial-vol2.svg?style=svg)](https://circleci.com/gh/Keei-SK/ial-vol2)
-
 [Google docs - priprava na obhajobu](https://docs.google.com/document/d/1tTo44nXXxEDO7JsKzL3hzcoaxhGyKCNZOSJlsRAkhl0/edit?usp=sharing)
 
 ### DESCRIPTION
@@ -27,3 +25,8 @@ Pokud existuje více řešení, stačí nalézt pouze jedno. Výsledky prezentov
 - xbarno00
 - xvanic09
 - xweige01
+
+### PROJECT EVALUATION
+
+14,5/15b
+
